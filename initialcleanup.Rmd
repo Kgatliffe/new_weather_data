@@ -1,0 +1,51 @@
+```{r}
+#setwd("~/Documents/UC Denver/MATH 6388 Adv Stat Methods/MATH 6388 Projects/Project 1")
+#NewData <- read.csv("~/Documents/UC Denver/MATH 6388 Adv Stat Methods/MATH 6388 Projects/Project 1/NewData.csv", row.names=1)
+#summary(NewData)
+#subset1<-subset(NewData, city_id == '5418523')
+#subset2<-subset(NewData, city_id == '5419384')
+#Denver<-subset1
+#CrestedButte<-subset2
+
+
+#Denver$snow_3h[is.na(Denver$snow_3h)] <- 0
+#CrestedButte$snow_3h[is.na(CrestedButte$snow_3h)] <- 0
+
+#Denver$snow_1h[is.na(Denver$snow_1h)] <- 0
+#CrestedButte$snow_1h[is.na(CrestedButte$snow_1h)] <- 0
+
+#Denver$rain_3h[is.na(Denver$rain_3h)] <- 0
+#CrestedButte$rain_3h[is.na(CrestedButte$rain_3h)] <- 0
+
+#Denver$rain_1h[is.na(Denver$rain_1h)] <- 0
+#CrestedButte$rain_1h[is.na(CrestedButte$rain_1h)] <- 0
+
+#Denver$city_name[is.na(Denver$city_name)] <- 'Denver'
+#CrestedButte$city_name[is.na(CrestedButte$city_name)] <- 'CrestedButte'
+
+#Denver$city_name <- as.factor(Denver$city_name)
+#CrestedButte$city_name <- as.factor(CrestedButte$city_name)
+
+#Denver$lat[is.na(Denver$lat)] <- 39.7392
+#CrestedButte$lat[is.na(CrestedButte$lat)] <- 38.8697
+#Denver$lon[is.na(Denver$lon)] <- -104.9848
+#CrestedButte$lon[is.na(CrestedButte$lon)] <- -106.9879
+
+#summary(Denver)
+#summary(CrestedButte)
+
+save(Denver, file = "Denver.rda")
+save(CrestedButte, file = "CrestedButte.rda")
+
+#model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver)
+#summary(model)
+
+
+#Denver_sample<-Denver[sample(nrow(Denver), 500), ]
+
+#model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver_sample)
+#summary(model)
+
+
+```
+
