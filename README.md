@@ -1,5 +1,8 @@
 # new_weather_data
 
+Updating with my latest thoughts. I will clean this up soon. 
+
+
 So I have divided the file into Denver and Crested Butte (I chose Crested Butte for being the snowiest city in the state). I did a quick cleanup changing the Na values to zero in rain and snow. My initial regression implies rain may be better than snow, and Denver may be better than Crested Butte. 
 
 Things to Do:
@@ -29,3 +32,37 @@ P.S. they didn’t give me any documentation per se (they didn’t even list the
 https://openweathermap.org/history-bulk
 
 for information. 
+
+Hey!
+
+So I was just being so military to break through the malaise and get us going in a clear direction. I totally expect that things will evolve with your findings. This is still a group project!  If you encounter problems please alert the group as soon as possible. I will be around all day today (except for class and office hours) but I will primarily be working on Linear Programming until my LP model is working, bleh.
+
+
+Some observations/ findings this morning:
+
+-> So Unix time is the number of seconds since January 01 1970 in UTC time. UTC has no daylight savings time. The current Colorado time zone is UTC-6.
+
+I calculate that the records for 3,6,9, and 12 will be found by subtracting,
+
+delta 3: 10800 
+delta 6: 21600
+delta 9: 32400
+delta 12: 43200
+
+https://www.unixtimestamp.com/
+
+-> Inches of snowfall or rainfall may not be as good an output as the group categorical value snow or rain.
+
+-> We have a much larger set of no snow (or no rain) than snow or rain. Is there an allowable data selection technique that would allow us to randomly select higher for our proposed outcome? I feel like there is but I’m drawing a blank. I’m going to see if Erin has an answer.
+
+-> Audrey can’t meet when I’m done with work Friday, and as the only Friday Stat tutor I’m not able to leave for her office hours. 
+
+Thanks!
+
+Kathleen 
+
+If our y is snow/ no snow (or precipitation / no precipitation ... we might lump snow and rain together) then we can run a logistic model which I think might be much better than linear regression.
+
+K
+
+re: Erin: we can stratify the data to randomly select a higher precentages of yes/ no (since our yeses are dwarfed by our nos).
