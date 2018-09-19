@@ -4,15 +4,11 @@ The file is divided into Denver and Crested Butte (I chose Crested Butte for bei
 
 Things to Do:
 
-Convert Unix UTC times to Denver standard times (I suggest creating a new column of Denver standard time). Unix time is the number of seconds since January 01 1970 in UTC time. UTC has no daylight savings time. The current Colorado time zone is UTC-6.
+Convert Unix UTC times to Denver standard times (I suggest creating a new column of Denver standard time). 
 
-I calculate that the records for 3,6,9, 12, and 24 hours will be found by subtracting,
+Write three questions and email them to Audrey Wednesday.
 
-delta 3: 10800,  delta 6: 21600, delta 9: 32400, delta 12: 43200, delta 24 86400.
-
-Write three questions and email them to Audrey tomorrow evening.
-
-Go to Friday office hours.
+Go to Friday office hours (Leo and Lee).
 
 Choose a question to pursue. Should we get Audrey's input first?
 
@@ -28,3 +24,8 @@ Either logit or ridge/lasso would be great with this data set.
 
 Wind direction is not indicative when converted to rectangular coordinates. Might be a good idea to try it as categorical (N, NE, E, SE, S, etc) but not a priority. 
 
+Unix time is the number of seconds since January 01 1970 in UTC time. UTC has no daylight savings time. The current Colorado time zone is UTC-6.
+
+I calculate that the records for 3, 6, 9, 12, and 24 hours will be found by subtracting,
+
+delta 3: 10800,  delta 6: 21600, delta 9: 32400, delta 12: 43200, delta 24 86400.
