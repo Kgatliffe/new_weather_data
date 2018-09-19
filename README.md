@@ -6,12 +6,9 @@ Things to Do:
 
 Convert Unix UTC times to Denver standard times (I suggest creating a new column of Denver standard time). Unix time is the number of seconds since January 01 1970 in UTC time. UTC has no daylight savings time. The current Colorado time zone is UTC-6.
 
-I calculate that the records for 3,6,9, and 12 will be found by subtracting,
+I calculate that the records for 3,6,9, 12, and 24 hours will be found by subtracting,
 
-delta 3: 10800 
-delta 6: 21600
-delta 9: 32400
-delta 12: 43200
+delta 3: 10800,  delta 6: 21600, delta 9: 32400, delta 12: 43200, delta 24 86400.
 
 Write three questions and email them to Audrey tomorrow evening.
 
