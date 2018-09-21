@@ -1,25 +1,35 @@
-Set Working Directory to Variable WD
-
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Clear working environment, Set Working Directory to Variable WD
 ```{r}
-WD=""
+rm(list=ls())
 WD="/Users/lee/Documents/GitHub/new_weather_data"
 setwd(WD)
 ```
 
+Load Libraries & Install Packages
+```{r}
+install.packages("lubridate")
+library(lubridate)
+```
 
 Load NewData.csv, create new Data sets:Denver and CrestedButte for each citie's data
-```{r}
+```{r include=FALSE}
 NewData <- read.csv("NewData.csv")
 summary(NewData)
 subset1<-subset(NewData, city_id == '5418523')
 subset2<-subset(NewData, city_id == '5419384')
 Denver<-subset1
 CrestedButte<-subset2
+rm(subset1)
+rm(subset2)
 ```
 
-
 Set NA measurements to zero, and converting city names to factors, with city-NA removals
-```{r}
+```{r include=FALSE}
 Denver$snow_3h[is.na(Denver$snow_3h)] <- 0
 CrestedButte$snow_3h[is.na(CrestedButte$snow_3h)] <- 0
 
@@ -45,18 +55,402 @@ CrestedButte$lon[is.na(CrestedButte$lon)] <- -106.9879
 ```
 
 Initial Data Summaries, and Saving new .RDA data sets to WD file for Denver and CrestedButte
-```{r}
+```{r include=FALSE}
 summary(Denver)
 summary(CrestedButte)
 
 save(Denver, file = "Denver.rda")
 save(CrestedButte, file = "CrestedButte.rda")
 
-model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver)
-summary(model)
-
-Denver_sample<-Denver[sample(nrow(Denver), 500), ]
-
-model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver_sample)
-summary(model)
+# model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver)
+# summary(model)
+# 
+# Denver_sample<-Denver[sample(nrow(Denver), 500), ]
+# 
+# model<-lm(rain_3h~temp+pressure+humidity+wind_speed,Denver_sample)
+# summary(model)
 ```
+
+Create Time-Formatting variable data for Denver data
+```{r include=FALSE}
+dt_iso_col_denver=Denver$dt_iso
+year_Den=year(dt_iso_col_denver)
+month_Den=month(dt_iso_col_denver)
+day_Den=day(dt_iso_col_denver)
+hour_Den=hour(dt_iso_col_denver)
+Denver$Year=NA
+Denver$Year=year_Den
+Denver$Month=NA
+Denver$Month=month_Den
+Denver$Day=NA
+Denver$Day=day_Den
+Denver$Hour=NA
+Denver$Hour=hour_Den
+rm(dt_iso_col_denver)
+rm(year_Den)
+rm(month_Den)
+rm(day_Den)
+rm(hour_Den)
+```
+
+Create Time-Formatting variable data for CB data
+```{r include=FALSE}
+dt_iso_col_CB=CrestedButte$dt_iso
+year_CB=year(dt_iso_col_CB)
+month_CB=month(dt_iso_col_CB)
+day_CB=day(dt_iso_col_CB)
+hour_CB=hour(dt_iso_col_CB)
+CrestedButte$Year=NA
+CrestedButte$Year=year_CB
+CrestedButte$Month=NA
+CrestedButte$Month=month_CB
+CrestedButte$Day=NA
+CrestedButte$Day=day_CB
+CrestedButte$Hour=NA
+CrestedButte$Hour=hour_CB
+rm(dt_iso_col_CB)
+rm(year_CB)
+rm(month_CB)
+rm(day_CB)
+rm(hour_CB)
+```
+
+Create -1H, -3H, -6H, -12H, -24H Time indicator columns for Denver data
+```{r include=FALSE}
+Denver$ind_1=NA
+Denver$ind_3=NA
+Denver$ind_6=NA
+Denver$ind_12=NA
+Denver$ind_24=NA
+
+
+for (i in 2:35888)
+{ 
+    if((Denver$Hour[i-1]+1==Denver$Hour[i]) | (Denver$Hour[i-1]==23 & Denver$Hour[i]==0))
+    {Denver$ind_1[i]=1}
+    else
+    {Denver$ind_1[i]=0}
+}
+
+
+for(i in 4:35888)
+{
+    if((Denver$Hour[i-3]+3==Denver$Hour[i]) | (Denver$Hour[i-3]==23 & Denver$Hour[i]==2))
+    {Denver$ind_3[i]=3}
+    else
+    {Denver$ind_3[i]=0}
+}
+
+for(i in 7:35888)
+{
+    if((Denver$Hour[i-6]+6==Denver$Hour[i]) | (Denver$Hour[i-6]==23 & Denver$Hour[i]==5))
+    {Denver$ind_6[i]=6}
+    else
+    {Denver$ind_6[i]=0}
+}
+
+for(i in 13:35888)
+{
+    if((Denver$Hour[i-12]+12==Denver$Hour[i]) | (Denver$Hour[i-12]==23 & Denver$Hour[i]==11))
+    {Denver$ind_12[i]=12}
+    else
+    {Denver$ind_12[i]=0}
+}
+
+for(i in 25:35888)
+{
+    if((Denver$Hour[i-24]+24==Denver$Hour[i]) | (Denver$Hour[i-24]==23 & Denver$Hour[i]==23))
+    {Denver$ind_24[i]=24}
+    else
+    {Denver$ind_24[i]=0}
+}
+```
+
+Create New -1H-Denver Data Set
+```{r}
+dt_1h_Den=c()         
+temp_1h_Den=c()              
+temp_min_1h_Den=c()     
+temp_max_1h_Den=c()        
+pressure_1h_Den=c()           
+sea_level_1h_Den=c()    
+grnd_level_1h_Den=c()    
+humidity_1h_Den=c()           
+wind_speed_1h_Den=c()      
+wind_deg_1h_Den=c()          
+rain_1h_1h_Den=c()            
+rain_3h_1h_Den=c()           
+rain_24h_1h_Den=c()         
+rain_today_1h_Den=c()         
+snow_1h_1h_Den=c()            
+snow_3h_1h_Den=c()            
+snow_24h_1h_Den=c()           
+snow_today_1h_Den=c()         
+clouds_all_1h_Den=c()          
+weather_id_1h_Den=c()         
+weather_main_1h_Den=c()      
+weather_description_1h_Den=c() 
+weather_icon_1h_Den=c()
+
+
+for(i in 2:3588)
+{ 
+  if (Denver$ind_1[i]==1)
+  {
+    dt_1h_Den[i]=Denver$dt[i-1]         
+    temp_1h_Den[i]=Denver$temp[i-1]              
+    temp_min_1h_Den[i]=Denver$temp_min[i-1]     
+    temp_max_1h_Den[i]=Denver$temp_max[i-1]        
+    pressure_1h_Den[i]=Denver$pressure[i-1]           
+    sea_level_1h_Den[i]=Denver$sea_level[i-1]    
+    grnd_level_1h_Den[i]=Denver$grnd_level[i-1]    
+    humidity_1h_Den[i]=Denver$humidity[i-1]           
+    wind_speed_1h_Den[i]=Denver$wind_speed[i-1]      
+    wind_deg_1h_Den[i]=Denver$wind_deg[i-1]          
+    rain_1h_1h_Den[i]=Denver$rain_1h[i-1]            
+    rain_3h_1h_Den[i]=Denver$rain_3h[i-1]           
+    rain_24h_1h_Den[i]=Denver$rain_24h[i-1]         
+    rain_today_1h_Den[i]=Denver$rain_today[i-1]         
+    snow_1h_1h_Den[i]=Denver$snow_1h[i-1]            
+    snow_3h_1h_Den[i]=Denver$snow_3h[i-1]            
+    snow_24h_1h_Den[i]=Denver$snow_24h[i-1]           
+    snow_today_1h_Den[i]=Denver$snow_today[i-1]         
+    clouds_all_1h_Den[i]=Denver$clouds_all[i-1]          
+    weather_id_1h_Den[i]=Denver$weather_id[i-1]         
+    weather_main_1h_Den[i]=Denver$weather_main[i-1]      
+    weather_description_1h_Den[i]=Denver$weather_description[i-1] 
+    weather_icon_1h_Den[i]=Denver$weather_icon[i-1]
+  }
+}
+
+Denver_1H=data.frame(dt_1h_Den,         
+                     temp_1h_Den,              
+                     temp_min_1h_Den,     
+                     temp_max_1h_Den,        
+                     pressure_1h_Den,           
+                     sea_level_1h_Den,    
+                     grnd_level_1h_Den,    
+                     humidity_1h_Den,           
+                     wind_speed_1h_Den,      
+                     wind_deg_1h_Den,          
+                     rain_1h_1h_Den,            
+                     rain_3h_1h_Den,           
+                     rain_24h_1h_Den,         
+                     rain_today_1h_Den,         
+                     snow_1h_1h_Den,            
+                     snow_3h_1h_Den,            
+                     snow_24h_1h_Den,           
+                     snow_today_1h_Den,         
+                     clouds_all_1h_Den,          
+                     weather_id_1h_Den,         
+                     weather_main_1h_Den,      
+                     weather_description_1h_Den, 
+                     weather_icon_1h_Den)
+save(Denver_1H, file = 'Denver_1H.rda')
+```
+
+
+Create New -3H-Denver Data Set
+```{r}
+dt_3h_Den=c()         
+temp_3h_Den=c()              
+temp_min_3h_Den=c()     
+temp_max_3h_Den=c()        
+pressure_3h_Den=c()           
+sea_level_3h_Den=c()    
+grnd_level_3h_Den=c()    
+humidity_3h_Den=c()           
+wind_speed_3h_Den=c()      
+wind_deg_3h_Den=c()          
+rain_1h_3h_Den=c()            
+rain_3h_3h_Den=c()           
+rain_24h_3h_Den=c()         
+rain_today_3h_Den=c()         
+snow_1h_3h_Den=c()            
+snow_3h_3h_Den=c()            
+snow_24h_3h_Den=c()           
+snow_today_3h_Den=c()         
+clouds_all_3h_Den=c()          
+weather_id_3h_Den=c()         
+weather_main_3h_Den=c()      
+weather_description_3h_Den=c() 
+weather_icon_3h_Den=c()
+
+
+for(i in 2:3588)
+{ 
+  if (Denver$ind_1[i]==1)
+  {
+    dt_3h_Den[i]=Denver$dt[i-1]         
+    temp_3h_Den[i]=Denver$temp[i-1]              
+    temp_min_3h_Den[i]=Denver$temp_min[i-1]     
+    temp_max_3h_Den[i]=Denver$temp_max[i-1]        
+    pressure_3h_Den[i]=Denver$pressure[i-1]           
+    sea_level_3h_Den[i]=Denver$sea_level[i-1]    
+    grnd_level_3h_Den[i]=Denver$grnd_level[i-1]    
+    humidity_3h_Den[i]=Denver$humidity[i-1]           
+    wind_speed_3h_Den[i]=Denver$wind_speed[i-1]      
+    wind_deg_3h_Den[i]=Denver$wind_deg[i-1]          
+    rain_1h_3h_Den[i]=Denver$rain_1h[i-1]            
+    rain_3h_3h_Den[i]=Denver$rain_3h[i-1]           
+    rain_24h_3h_Den[i]=Denver$rain_24h[i-1]         
+    rain_today_3h_Den[i]=Denver$rain_today[i-1]         
+    snow_1h_3h_Den[i]=Denver$snow_1h[i-1]            
+    snow_3h_3h_Den[i]=Denver$snow_3h[i-1]            
+    snow_24h_3h_Den[i]=Denver$snow_24h[i-1]           
+    snow_today_3h_Den[i]=Denver$snow_today[i-1]         
+    clouds_all_3h_Den[i]=Denver$clouds_all[i-1]          
+    weather_id_3h_Den[i]=Denver$weather_id[i-1]         
+    weather_main_3h_Den[i]=Denver$weather_main[i-1]      
+    weather_description_3h_Den[i]=Denver$weather_description[i-1] 
+    weather_icon_3h_Den[i]=Denver$weather_icon[i-1]
+  }
+}
+
+Denver_3h=data.frame(dt_3h_Den,         
+                     temp_3h_Den,              
+                     temp_min_3h_Den,     
+                     temp_max_3h_Den,        
+                     pressure_3h_Den,           
+                     sea_level_3h_Den,    
+                     grnd_level_3h_Den,    
+                     humidity_3h_Den,           
+                     wind_speed_3h_Den,      
+                     wind_deg_3h_Den,          
+                     rain_1h_3h_Den,            
+                     rain_3h_3h_Den,           
+                     rain_24h_3h_Den,         
+                     rain_today_3h_Den,         
+                     snow_1h_3h_Den,            
+                     snow_3h_3h_Den,            
+                     snow_24h_3h_Den,           
+                     snow_today_3h_Den,         
+                     clouds_all_3h_Den,          
+                     weather_id_3h_Den,         
+                     weather_main_3h_Den,      
+                     weather_description_3h_Den, 
+                     weather_icon_3h_Den)
+save(Denver_3h, file = 'Denver_3h.rda')
+```
+
+
+Create New -6H-Denver Data Set
+```{r}
+# dt         
+# dt_iso      
+# city_id          
+# city_name        
+# lat                
+# lon           
+# temp              
+# temp_min     
+# temp_max        
+# pressure           
+# sea_level    
+# grnd_level    
+# humidity           
+# wind_speed      
+# wind_deg          
+# rain_1h            
+# rain_3h           
+# rain_24h         
+# rain_today         
+# snow_1h            
+# snow_3h            
+# snow_24h           
+# snow_today         
+# clouds_all          
+# weather_id         
+# weather_main      
+# weather_description 
+# weather_icon
+
+
+dt_3h_Den=c()         
+temp_3h_Den=c()              
+temp_min_3h_Den=c()     
+temp_max_3h_Den=c()        
+pressure_3h_Den=c()           
+sea_level_3h_Den=c()    
+grnd_level_3h_Den=c()    
+humidity_3h_Den=c()           
+wind_speed_3h_Den=c()      
+wind_deg_3h_Den=c()          
+rain_1h_3h_Den=c()            
+rain_3h_3h_Den=c()           
+rain_24h_3h_Den=c()         
+rain_today_3h_Den=c()         
+snow_1h_3h_Den=c()            
+snow_3h_3h_Den=c()            
+snow_24h_3h_Den=c()           
+snow_today_3h_Den=c()         
+clouds_all_3h_Den=c()          
+weather_id_3h_Den=c()         
+weather_main_3h_Den=c()      
+weather_description_3h_Den=c() 
+weather_icon_3h_Den=c()
+
+
+for(i in 2:3588)
+{ 
+  if (Denver$ind_1[i]==1)
+  {
+    dt_3h_Den[i]=Denver$dt[i-1]         
+    temp_3h_Den[i]=Denver$temp[i-1]              
+    temp_min_3h_Den[i]=Denver$temp_min[i-1]     
+    temp_max_3h_Den[i]=Denver$temp_max[i-1]        
+    pressure_3h_Den[i]=Denver$pressure[i-1]           
+    sea_level_3h_Den[i]=Denver$sea_level[i-1]    
+    grnd_level_3h_Den[i]=Denver$grnd_level[i-1]    
+    humidity_3h_Den[i]=Denver$humidity[i-1]           
+    wind_speed_3h_Den[i]=Denver$wind_speed[i-1]      
+    wind_deg_3h_Den[i]=Denver$wind_deg[i-1]          
+    rain_1h_3h_Den[i]=Denver$rain_1h[i-1]            
+    rain_3h_3h_Den[i]=Denver$rain_3h[i-1]           
+    rain_24h_3h_Den[i]=Denver$rain_24h[i-1]         
+    rain_today_3h_Den[i]=Denver$rain_today[i-1]         
+    snow_1h_3h_Den[i]=Denver$snow_1h[i-1]            
+    snow_3h_3h_Den[i]=Denver$snow_3h[i-1]            
+    snow_24h_3h_Den[i]=Denver$snow_24h[i-1]           
+    snow_today_3h_Den[i]=Denver$snow_today[i-1]         
+    clouds_all_3h_Den[i]=Denver$clouds_all[i-1]          
+    weather_id_3h_Den[i]=Denver$weather_id[i-1]         
+    weather_main_3h_Den[i]=Denver$weather_main[i-1]      
+    weather_description_3h_Den[i]=Denver$weather_description[i-1] 
+    weather_icon_3h_Den[i]=Denver$weather_icon[i-1]
+  }
+}
+
+Denver_3h=data.frame(dt_3h_Den,         
+                     temp_3h_Den,              
+                     temp_min_3h_Den,     
+                     temp_max_3h_Den,        
+                     pressure_3h_Den,           
+                     sea_level_3h_Den,    
+                     grnd_level_3h_Den,    
+                     humidity_3h_Den,           
+                     wind_speed_3h_Den,      
+                     wind_deg_3h_Den,          
+                     rain_1h_3h_Den,            
+                     rain_3h_3h_Den,           
+                     rain_24h_3h_Den,         
+                     rain_today_3h_Den,         
+                     snow_1h_3h_Den,            
+                     snow_3h_3h_Den,            
+                     snow_24h_3h_Den,           
+                     snow_today_3h_Den,         
+                     clouds_all_3h_Den,          
+                     weather_id_3h_Den,         
+                     weather_main_3h_Den,      
+                     weather_description_3h_Den, 
+                     weather_icon_3h_Den)
+save(Denver_3h, file = 'Denver_3h.rda')
+```
+
+
+
+
+
+
+
+
