@@ -1,0 +1,28 @@
+---
+title: "Lee_NewWeather"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = FALSE)
+```
+
+Clear working environment, Set Working Directory to Variable WD
+```{r}
+rm(list=ls())
+WD="/Users/lee/Documents/GitHub/new_weather_data"
+setwd(WD)
+```
+
+Load Libraries & Install Packages
+```{r}
+install.packages("lubridate")
+library(lubridate)
+```
+
+Load Data files Denver.rda and CrestedButte.rda
+```{r}
+load(Denver.rda)
+```
+
+
