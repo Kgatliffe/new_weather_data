@@ -1,18 +1,64 @@
 # new_weather_data
 
-The file is divided into Denver and Crested Butte (I chose Crested Butte for being the snowiest city in the state). I did a quick cleanup changing the Na values to zero in rain and snow. The only source documentation is at: https://openweathermap.org/history-bulk
+The file is divided into Denver and Crested Butte (I chose Crested Butte for being the snowiest city in the state). I did a quick cleanup changing the Na values to zero in rain and snow. The description of variables is:
+Parameters:
+coord
+coord.lon City geo location, longitude
+coord.lat City geo location, latitude
+weather (more info Weather condition codes)
+weather.id Weather condition id
+weather.main Group of weather parameters (Rain, Snow, Extreme etc.)
+weather.description Weather condition within the group
+weather.icon Weather icon id
+base Internal parameter
+main
+main.temp Temperature. The temperature is provided only in Kelvins
+main.pressure Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa
+main.humidity Humidity, %
+main.temp_min Minimum temperature at the moment. This is deviation from temperature that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). The temperature is provided only in Kelvins.
+main.temp_max Maximum temperature at the moment. This is deviation from temperature that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). The temperature is provided only in Kelvins.
+main.sea_level Atmospheric pressure on the sea level, hPa
+main.grnd_level Atmospheric pressure on the ground level, hPa
+wind
+wind.speed Wind speed. Unit: meter/sec.
+wind.deg Wind direction, degrees (meteorological)
+clouds
+clouds.all Cloudiness, %
+rain
+rain.3h Rain volume for the last 3 hours
+snow
+snow.3h Snow volume for the last 3 hours
+dt Time of data calculation, unix, UTC
+id City ID
+name City name
+cod Internal parameter
+
+
+Things Done:
+
+Removed empty and uneeded columns - Leo
+Replaced NAs with zeros in rain/snow accumulation - Kat
+Converted temp to Celsius - Leo
+
+Things Being Done:
+
+Write script to model on prior values - Lee
+
+Go to Friday office hours (Leo? and Kat).
+
+Checking for invalid records - Kat
 
 Things to Do:
 
-Convert Unix UTC times to Denver standard times (I suggest creating a new column of Denver standard time). 
+Logistical model code
 
-Write three questions and email them to Audrey Wednesday.
+Convert Unix UTC times to MST (UTC -7) in a separate column
 
-Go to Friday office hours (Leo and Lee).
+Create training and test sets.
 
-Choose a question to pursue. Should we get Audrey's input first?
+Questions:
 
-I calculate that the records for 3,6,9, and 12 will be found by subtracting,
+Do we need any day long summary data (max, min, mean etc)?
 
 Observations:
 
