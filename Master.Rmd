@@ -352,65 +352,65 @@ save(Denver_12h, file = 'Denver_12h.rda')
 
 Create New -24H-Denver Data Set
 ```{r}
-dt_12h_Den=c()         
-temp_12h_Den=c()              
-temp_min_12h_Den=c()     
-temp_max_12h_Den=c()        
-pressure_12h_Den=c()           
-humidity_12h_Den=c()           
-wind_speed_12h_Den=c()      
-wind_deg_12h_Den=c()          
-rain_1h_12h_Den=c()            
-rain_3h_12h_Den=c()           
-snow_1h_12h_Den=c()            
-snow_3h_12h_Den=c()            
-clouds_all_12h_Den=c()          
-weather_id_12h_Den=c()         
-weather_main_12h_Den=c()      
-weather_description_12h_Den=c() 
+dt_24h_Den=c()         
+temp_24h_Den=c()              
+temp_min_24h_Den=c()     
+temp_max_24h_Den=c()        
+pressure_24h_Den=c()           
+humidity_24h_Den=c()           
+wind_speed_24h_Den=c()      
+wind_deg_24h_Den=c()          
+rain_1h_24h_Den=c()            
+rain_3h_24h_Den=c()           
+snow_1h_24h_Den=c()            
+snow_3h_24h_Den=c()            
+clouds_all_24h_Den=c()          
+weather_id_24h_Den=c()         
+weather_main_24h_Den=c()      
+weather_description_24h_Den=c() 
 
 
-for(i in 13:35888)
+for(i in 25:35888)
 { 
-  if (Denver$ind_12[i]==12)
+  if (Denver$ind_24[i]==24)
   {
-    dt_12h_Den[i]=Denver$dt[i-12]         
-    temp_12h_Den[i]=Denver$temp[i-12]              
-    temp_min_12h_Den[i]=Denver$temp_min[i-12]     
-    temp_max_12h_Den[i]=Denver$temp_max[i-12]        
-    pressure_12h_Den[i]=Denver$pressure[i-12]           
-    humidity_12h_Den[i]=Denver$humidity[i-12]           
-    wind_speed_12h_Den[i]=Denver$wind_speed[i-12]      
-    wind_deg_12h_Den[i]=Denver$wind_deg[i-12]          
-    rain_1h_12h_Den[i]=Denver$rain_1h[i-12]            
-    rain_3h_12h_Den[i]=Denver$rain_3h[i-12]           
-    snow_1h_12h_Den[i]=Denver$snow_1h[i-12]            
-    snow_3h_12h_Den[i]=Denver$snow_3h[i-12]            
-    clouds_all_12h_Den[i]=Denver$clouds_all[i-12]          
-    weather_id_12h_Den[i]=Denver$weather_id[i-12]         
-    weather_main_12h_Den[i]=Denver$weather_main[i-12]      
-    weather_description_12h_Den[i]=Denver$weather_description[i-12] 
+    dt_24h_Den[i]=Denver$dt[i-24]         
+    temp_24h_Den[i]=Denver$temp[i-24]              
+    temp_min_24h_Den[i]=Denver$temp_min[i-24]     
+    temp_max_24h_Den[i]=Denver$temp_max[i-24]        
+    pressure_24h_Den[i]=Denver$pressure[i-24]           
+    humidity_24h_Den[i]=Denver$humidity[i-24]           
+    wind_speed_24h_Den[i]=Denver$wind_speed[i-24]      
+    wind_deg_24h_Den[i]=Denver$wind_deg[i-24]          
+    rain_1h_24h_Den[i]=Denver$rain_1h[i-24]            
+    rain_3h_24h_Den[i]=Denver$rain_3h[i-24]           
+    snow_1h_24h_Den[i]=Denver$snow_1h[i-24]            
+    snow_3h_24h_Den[i]=Denver$snow_3h[i-24]            
+    clouds_all_24h_Den[i]=Denver$clouds_all[i-24]          
+    weather_id_24h_Den[i]=Denver$weather_id[i-24]         
+    weather_main_24h_Den[i]=Denver$weather_main[i-24]      
+    weather_description_24h_Den[i]=Denver$weather_description[i-24] 
   }
 }
 
 
-Denver_12h=data.frame(dt_12h_Den,
-                     temp_12h_Den,
-                     temp_min_12h_Den,     
-                     temp_max_12h_Den,
-                     pressure_12h_Den,         
-                     humidity_12h_Den,           
-                     wind_speed_12h_Den,      
-                     wind_deg_12h_Den,          
-                     rain_1h_12h_Den,            
-                     rain_3h_12h_Den,           
-                     snow_1h_12h_Den,            
-                     snow_3h_12h_Den,            
-                     clouds_all_12h_Den,          
-                     weather_id_12h_Den,         
-                     weather_main_12h_Den,      
-                     weather_description_12h_Den) 
-save(Denver_12h, file = 'Denver_12h.rda')
+Denver_24h=data.frame(dt_24h_Den,
+                     temp_24h_Den,
+                     temp_min_24h_Den,     
+                     temp_max_24h_Den,
+                     pressure_24h_Den,         
+                     humidity_24h_Den,           
+                     wind_speed_24h_Den,      
+                     wind_deg_24h_Den,          
+                     rain_1h_24h_Den,            
+                     rain_3h_24h_Den,           
+                     snow_1h_24h_Den,            
+                     snow_3h_24h_Den,            
+                     clouds_all_24h_Den,          
+                     weather_id_24h_Den,         
+                     weather_main_24h_Den,      
+                     weather_description_24h_Den) 
+save(Denver_24h, file = 'Denver_24h.rda')
 ```
 
 
