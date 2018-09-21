@@ -225,69 +225,68 @@ Denver_3h=data.frame(dt_3h_Den,
 save(Denver_3h, file = 'Denver_3h.rda')
 ```
 
-Create New -3H-Denver Data Set
+
+Create New -6H-Denver Data Set
 ```{r}
-dt_3h_Den=c()         
-temp_3h_Den=c()              
-temp_min_3h_Den=c()     
-temp_max_3h_Den=c()        
-pressure_3h_Den=c()           
-humidity_3h_Den=c()           
-wind_speed_3h_Den=c()      
-wind_deg_3h_Den=c()          
-rain_1h_3h_Den=c()            
-rain_3h_3h_Den=c()           
-snow_1h_3h_Den=c()            
-snow_3h_3h_Den=c()            
-clouds_all_3h_Den=c()          
-weather_id_3h_Den=c()         
-weather_main_3h_Den=c()      
-weather_description_3h_Den=c() 
+dt_6h_Den=c()         
+temp_6h_Den=c()              
+temp_min_6h_Den=c()     
+temp_max_6h_Den=c()        
+pressure_6h_Den=c()           
+humidity_6h_Den=c()           
+wind_speed_6h_Den=c()      
+wind_deg_6h_Den=c()          
+rain_1h_6h_Den=c()            
+rain_3h_6h_Den=c()           
+snow_1h_6h_Den=c()            
+snow_3h_6h_Den=c()            
+clouds_all_6h_Den=c()          
+weather_id_6h_Den=c()         
+weather_main_6h_Den=c()      
+weather_description_6h_Den=c() 
 
 
-for(i in 4:3588)
+for(i in 7:3588)
 { 
-  if (Denver$ind_3[i]==3)
+  if (Denver$ind_6[i]==6)
   {
-    dt_3h_Den[i]=Denver$dt[i-3]         
-    temp_3h_Den[i]=Denver$temp[i-3]              
-    temp_min_3h_Den[i]=Denver$temp_min[i-3]     
-    temp_max_3h_Den[i]=Denver$temp_max[i-3]        
-    pressure_3h_Den[i]=Denver$pressure[i-3]           
-    humidity_3h_Den[i]=Denver$humidity[i-3]           
-    wind_speed_3h_Den[i]=Denver$wind_speed[i-3]      
-    wind_deg_3h_Den[i]=Denver$wind_deg[i-3]          
-    rain_1h_3h_Den[i]=Denver$rain_1h[i-3]            
-    rain_3h_3h_Den[i]=Denver$rain_3h[i-3]           
-    snow_1h_3h_Den[i]=Denver$snow_1h[i-3]            
-    snow_3h_3h_Den[i]=Denver$snow_3h[i-3]            
-    clouds_all_3h_Den[i]=Denver$clouds_all[i-3]          
-    weather_id_3h_Den[i]=Denver$weather_id[i-3]         
-    weather_main_3h_Den[i]=Denver$weather_main[i-3]      
-    weather_description_3h_Den[i]=Denver$weather_description[i-3] 
+    dt_6h_Den[i]=Denver$dt[i-6]         
+    temp_6h_Den[i]=Denver$temp[i-6]              
+    temp_min_6h_Den[i]=Denver$temp_min[i-6]     
+    temp_max_6h_Den[i]=Denver$temp_max[i-6]        
+    pressure_6h_Den[i]=Denver$pressure[i-6]           
+    humidity_6h_Den[i]=Denver$humidity[i-6]           
+    wind_speed_6h_Den[i]=Denver$wind_speed[i-6]      
+    wind_deg_6h_Den[i]=Denver$wind_deg[i-6]          
+    rain_1h_6h_Den[i]=Denver$rain_1h[i-6]            
+    rain_3h_6h_Den[i]=Denver$rain_6h[i-6]           
+    snow_1h_6h_Den[i]=Denver$snow_1h[i-6]            
+    snow_3h_6h_Den[i]=Denver$snow_6h[i-6]            
+    clouds_all_6h_Den[i]=Denver$clouds_all[i-6]          
+    weather_id_6h_Den[i]=Denver$weather_id[i-6]         
+    weather_main_6h_Den[i]=Denver$weather_main[i-6]      
+    weather_description_6h_Den[i]=Denver$weather_description[i-6] 
   }
 }
 
-Denver_3h=data.frame(dt_3h_Den,         
-                     temp_3h_Den,              
-                     temp_min_3h_Den,     
-                     temp_max_3h_Den,        
-                     pressure_3h_Den,         
-                     humidity_3h_Den,           
-                     wind_speed_3h_Den,      
-                     wind_deg_3h_Den,          
-                     rain_1h_3h_Den,            
-                     rain_3h_3h_Den,           
-                     snow_1h_3h_Den,            
-                     snow_3h_3h_Den,            
-                     clouds_all_3h_Den,          
-                     weather_id_3h_Den,         
-                     weather_main_3h_Den,      
-                     weather_description_3h_Den) 
-save(Denver_3h, file = 'Denver_3h.rda')
+Denver_6h=data.frame(dt_6h_Den,         
+                     temp_6h_Den,              
+                     temp_min_6h_Den,     
+                     temp_max_6h_Den,        
+                     pressure_6h_Den,         
+                     humidity_6h_Den,           
+                     wind_speed_6h_Den,      
+                     wind_deg_6h_Den,          
+                     rain_1h_6h_Den,            
+                     rain_3h_6h_Den,           
+                     snow_1h_6h_Den,            
+                     snow_3h_6h_Den,            
+                     clouds_all_6h_Den,          
+                     weather_id_6h_Den,         
+                     weather_main_6h_Den,      
+                     weather_description_6h_Den) 
+save(Denver_6h, file = 'Denver_6h.rda')
 ```
-
-
 
 
 
