@@ -566,8 +566,7 @@ prev_sum[1:35888]=NA
 resp_ind=c()
 resp_ind[1:35888]=NA
 
-
-for(i in 25:35888)
+for(i in 1:35888)
 {
   if((FinalDat$weather_main[i]=="Drizzle")|(FinalDat$weather_main[i]=="Fog")|(FinalDat$weather_main[i]=="Mist")|
      (FinalDat$weather_main[i]=="Rain")|(FinalDat$weather_main[i]=="Snow")|(FinalDat$weather_main[i]=="Squall")|
@@ -577,14 +576,12 @@ for(i in 25:35888)
     {descr_ind[i]=0} 
 }
 
-
 for(i in 25:35888)
 {
   prev_sum[i]=sum(descr_ind[(i-24):i])
 }
 
-
-for(i in 50:35888)
+for(i in 25:35888)
 {
   if(prev_sum[i]>0)
   {
@@ -597,9 +594,12 @@ for(i in 50:35888)
 FinalDat$Question=resp_ind
 
 save(FinalDat, file = 'FinalDat.rda')
-
+rm(resp_ind)
+rm(prev_sum)
+rm(descr_ind)
+rm(i)
+rm(k)
 ```
-
 
 ############################################################################################################
 ############################################################################################################
