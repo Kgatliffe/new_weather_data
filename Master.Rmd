@@ -516,7 +516,7 @@ Clean up Work Space, re-import data sets
 ```{r include=FALSE}
 rm(list=ls())
 load("FinalDat.rda")
-load("Denver.rda")
+load("DenverCorrect.rda")
 load("Denver_1h.rda")
 load("Denver_3h.rda")
 load("Denver_6h.rda")
