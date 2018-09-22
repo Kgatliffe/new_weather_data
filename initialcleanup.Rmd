@@ -93,27 +93,27 @@ rm(day_Den)
 rm(hour_Den)
 ```
 
-Create Time-Formatting variable data for CB data
-```{r include=FALSE}
-dt_iso_col_CB=CrestedButte$dt_iso
-year_CB=year(dt_iso_col_CB)
-month_CB=month(dt_iso_col_CB)
-day_CB=day(dt_iso_col_CB)
-hour_CB=hour(dt_iso_col_CB)
-CrestedButte$Year=NA
-CrestedButte$Year=year_CB
-CrestedButte$Month=NA
-CrestedButte$Month=month_CB
-CrestedButte$Day=NA
-CrestedButte$Day=day_CB
-CrestedButte$Hour=NA
-CrestedButte$Hour=hour_CB
-rm(dt_iso_col_CB)
-rm(year_CB)
-rm(month_CB)
-rm(day_CB)
-rm(hour_CB)
-```
+<!-- Create Time-Formatting variable data for CB data -->
+<!-- ```{r include=FALSE} -->
+<!-- dt_iso_col_CB=CrestedButte$dt_iso -->
+<!-- year_CB=year(dt_iso_col_CB) -->
+<!-- month_CB=month(dt_iso_col_CB) -->
+<!-- day_CB=day(dt_iso_col_CB) -->
+<!-- hour_CB=hour(dt_iso_col_CB) -->
+<!-- CrestedButte$Year=NA -->
+<!-- CrestedButte$Year=year_CB -->
+<!-- CrestedButte$Month=NA -->
+<!-- CrestedButte$Month=month_CB -->
+<!-- CrestedButte$Day=NA -->
+<!-- CrestedButte$Day=day_CB -->
+<!-- CrestedButte$Hour=NA -->
+<!-- CrestedButte$Hour=hour_CB -->
+<!-- rm(dt_iso_col_CB) -->
+<!-- rm(year_CB) -->
+<!-- rm(month_CB) -->
+<!-- rm(day_CB) -->
+<!-- rm(hour_CB) -->
+<!-- ``` -->
 
 Create -1H, -3H, -6H, -12H, -24H Time indicator columns for Denver data
 ```{r include=FALSE}
@@ -173,24 +173,17 @@ temp_1h_Den=c()
 temp_min_1h_Den=c()     
 temp_max_1h_Den=c()        
 pressure_1h_Den=c()           
-sea_level_1h_Den=c()    
-grnd_level_1h_Den=c()    
 humidity_1h_Den=c()           
 wind_speed_1h_Den=c()      
 wind_deg_1h_Den=c()          
 rain_1h_1h_Den=c()            
 rain_3h_1h_Den=c()           
-rain_24h_1h_Den=c()         
-rain_today_1h_Den=c()         
 snow_1h_1h_Den=c()            
 snow_3h_1h_Den=c()            
-snow_24h_1h_Den=c()           
-snow_today_1h_Den=c()         
 clouds_all_1h_Den=c()          
 weather_id_1h_Den=c()         
 weather_main_1h_Den=c()      
 weather_description_1h_Den=c() 
-weather_icon_1h_Den=c()
 
 
 for(i in 2:3588)
@@ -202,24 +195,17 @@ for(i in 2:3588)
     temp_min_1h_Den[i]=Denver$temp_min[i-1]     
     temp_max_1h_Den[i]=Denver$temp_max[i-1]        
     pressure_1h_Den[i]=Denver$pressure[i-1]           
-    sea_level_1h_Den[i]=Denver$sea_level[i-1]    
-    grnd_level_1h_Den[i]=Denver$grnd_level[i-1]    
     humidity_1h_Den[i]=Denver$humidity[i-1]           
     wind_speed_1h_Den[i]=Denver$wind_speed[i-1]      
     wind_deg_1h_Den[i]=Denver$wind_deg[i-1]          
     rain_1h_1h_Den[i]=Denver$rain_1h[i-1]            
     rain_3h_1h_Den[i]=Denver$rain_3h[i-1]           
-    rain_24h_1h_Den[i]=Denver$rain_24h[i-1]         
-    rain_today_1h_Den[i]=Denver$rain_today[i-1]         
     snow_1h_1h_Den[i]=Denver$snow_1h[i-1]            
     snow_3h_1h_Den[i]=Denver$snow_3h[i-1]            
-    snow_24h_1h_Den[i]=Denver$snow_24h[i-1]           
-    snow_today_1h_Den[i]=Denver$snow_today[i-1]         
     clouds_all_1h_Den[i]=Denver$clouds_all[i-1]          
     weather_id_1h_Den[i]=Denver$weather_id[i-1]         
     weather_main_1h_Den[i]=Denver$weather_main[i-1]      
     weather_description_1h_Den[i]=Denver$weather_description[i-1] 
-    weather_icon_1h_Den[i]=Denver$weather_icon[i-1]
   }
 }
 
@@ -227,25 +213,19 @@ Denver_1H=data.frame(dt_1h_Den,
                      temp_1h_Den,              
                      temp_min_1h_Den,     
                      temp_max_1h_Den,        
-                     pressure_1h_Den,           
-                     sea_level_1h_Den,    
-                     grnd_level_1h_Den,    
+                     pressure_1h_Den,         
                      humidity_1h_Den,           
                      wind_speed_1h_Den,      
                      wind_deg_1h_Den,          
                      rain_1h_1h_Den,            
                      rain_3h_1h_Den,           
                      rain_24h_1h_Den,         
-                     rain_today_1h_Den,         
                      snow_1h_1h_Den,            
                      snow_3h_1h_Den,            
-                     snow_24h_1h_Den,           
-                     snow_today_1h_Den,         
                      clouds_all_1h_Den,          
                      weather_id_1h_Den,         
                      weather_main_1h_Den,      
-                     weather_description_1h_Den, 
-                     weather_icon_1h_Den)
+                     weather_description_1h_Den) 
 save(Denver_1H, file = 'Denver_1H.rda')
 ```
 
