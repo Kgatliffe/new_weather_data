@@ -2,17 +2,33 @@
 require(caTools)
 dat<-FinalDat
 set.seed(101) 
-sample = sample.split(dat$dt, SplitRatio = .75)
-trainset = subset(dat, sample == TRUE)
-testset  = subset(dat, sample == FALSE)
+dat_sample<-dat[sample(nrow(dat), 3000), ]
+sample = sample.split(dat_sample$dt, SplitRatio = .75)
+trainset = subset(dat_sample, sample == TRUE)
+testset  = subset(dat_sample, sample == FALSE)
 
-	ans24hrs <- glm(as.factor(Question) ~
+ans24hrs <- glm(as.factor(Question) ~
 temp_24h_Den
 +pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den
 +rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
 +snow_3h_24h_Den+clouds_all_24h_Den
-+weather_main_24h_Den
-, family=binomial(), data=trainset)
++weather_main_24h_Den, family=binomial(), data=trainset)
+
+summary(ans24hrs)
+coef(ans24hrs)
+summary(ans24hrs)$coef
+summary(ans24hrs)$coef[,4]
+glm.probs=predict(ans24hrs,type="response")
+glm.probs[1:10]
+
+	reg.class.test <- predict.lm(ans24hrs, newdata=testset)
+	summary(reg.class.test)
+#	reg.class.test <- 1*(reg.class.test > 0.5)
+#	Question.test <- 1*(testset[,1]==2)
+#	table(Question.test, reg.class.test)
+
+#	reg.class.training <- 1*(ans24hrs$fitted.values > 0.5)
+#	table(Question, reg.class.training)[2:1,2:1]
 
 #	ans24hrs <- glm(as.factor(Question) ~
 #temp_24h_Den
