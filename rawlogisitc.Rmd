@@ -1,16 +1,49 @@
 ```{r}
+require(caTools)
 dat<-FinalDat
-#	dim(dat)
-#	names(dat)
+set.seed(101) 
+sample = sample.split(dat$dt, SplitRatio = .75)
+trainset = subset(dat, sample == TRUE)
+testset  = subset(dat, sample == FALSE)
 
-	ans <- glm(as.factor(Question) ~ temp+temp_min+temp_max+pressure+humidity+wind_speed+wind_deg+rain_1h
-+rain_3h+snow_1h+snow_3h+clouds_all
-, family=binomial(), data=FinalDat)
+	ans24hrs <- glm(as.factor(Question) ~
+temp_24h_Den
++pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den
++rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
++snow_3h_24h_Den+clouds_all_24h_Den
++weather_main_24h_Den
+, family=binomial(), data=trainset)
+
+#	ans24hrs <- glm(as.factor(Question) ~
+#temp_24h_Den
+#+pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den
+#+rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
+#+snow_3h_24h_Den+clouds_all_24h_Den
+#+weather_main_24h_Den
+#, family=binomial(), data=dat_sample)
+
+#	ans1hrs <- glm(as.factor(Question) ~
+#temp_1h_Den
+#+pressure_1h_Den+humidity_1h_Den+wind_speed_1h_Den
+#+clouds_all_1h_Den
+#, family=binomial(), data=dat_sample)
 	
-	summary(ans)
+summary(ans24hrs)
 ```
 
 ```{r}
+	ans12hrs <- glm(as.factor(Question) ~
+temp_12h_Den
++pressure_12h_Den+humidity_12h_Den+wind_speed_12h_Den
++rain_1h_12h_Den+rain_3h_12h_Den+snow_1h_12h_Den
++snow_3h_12h_Den+clouds_all_12h_Den
++weather_main_12h_Den+I(pressure_12h_Den-pressure_24h_Den)+I(temp_12h_Den-temp_24h_Den)
+, family=binomial(), data=dat_sample)
+	
+summary(ans12hrs)
+plot(ans12hrs)
+```
+
 
 	# drop alcohol
 
@@ -158,5 +191,4 @@ x2
 
 pchisq(x2,df=2,lower.tail=F)
 
-```
 
