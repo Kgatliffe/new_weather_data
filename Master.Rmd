@@ -74,41 +74,42 @@ Denver$ind_24=NA
 for (i in 2:35888)
 { 
     if((Denver$Hour[i-1]+1==Denver$Hour[i]) | (Denver$Hour[i-1]==23 & Denver$Hour[i]==0))
-    {Denver$ind_1[i]=1}
+    {Denver$ind_1[i]<-1}
     else
-    {Denver$ind_1[i]=0}
+    {Denver$ind_1[i]<-0}
 }
 
 
-for(i in 4:35888)
+for(i in 5:35888)
 {
-    if((Denver$Hour[i-3]+3==Denver$Hour[i]) | (Denver$Hour[i-3]==23 & Denver$Hour[i]==2))
+  if(Denver$ind_1[i-3]==1)
     {Denver$ind_3[i]=3}
-    else
+  else
     {Denver$ind_3[i]=0}
 }
 
-for(i in 7:35888)
+
+for(i in 8:35888)
 {
-    if((Denver$Hour[i-6]+6==Denver$Hour[i]) | (Denver$Hour[i-6]==23 & Denver$Hour[i]==5))
+  if(Denver$ind_1[i-6]==1)
     {Denver$ind_6[i]=6}
-    else
+  else
     {Denver$ind_6[i]=0}
 }
 
-for(i in 13:35888)
+for(i in 14:35888)
 {
-    if((Denver$Hour[i-12]+12==Denver$Hour[i]) | (Denver$Hour[i-12]==23 & Denver$Hour[i]==11))
-    {Denver$ind_12[i]=12}
+    if(Denver$ind_1[i-12]==1)
+      {Denver$ind_12[i]=12}
     else
-    {Denver$ind_12[i]=0}
+      {Denver$ind_12[i]=0}
 }
 
-for(i in 25:35888)
+for(i in 26:35888)
 {
-    if((Denver$Hour[i-24]+24==Denver$Hour[i]) | (Denver$Hour[i-24]==23 & Denver$Hour[i]==23))
+  if(Denver$ind_1[i-24]==1)
     {Denver$ind_24[i]=24}
-    else
+  else
     {Denver$ind_24[i]=0}
 }
 rm(i)
@@ -132,23 +133,6 @@ clouds_all_1h_Den=c()
 weather_id_1h_Den=c()         
 weather_main_1h_Den=c()      
 weather_description_1h_Den=c() 
-
-temp_1h_Den=c()              
-temp_min_1h_Den=c()     
-temp_max_1h_Den=c()        
-pressure_1h_Den=c()           
-humidity_1h_Den=c()           
-wind_speed_1h_Den=c()      
-wind_deg_1h_Den=c()          
-rain_1h_1h_Den=c()            
-rain_3h_1h_Den=c()           
-snow_1h_1h_Den=c()            
-snow_3h_1h_Den=c()            
-clouds_all_1h_Den=c()          
-weather_id_1h_Den=c()         
-weather_main_1h_Den=c()      
-weather_description_1h_Den=c() 
-
 
 for(i in 2:35888)
 { 
@@ -229,7 +213,7 @@ weather_main_3h_Den[1:35888]=NA
 weather_description_3h_Den[1:35888]=NA 
 
 
-for(i in 4:35888)
+for(i in 5:35888)
 { 
   if (Denver$ind_3[i]==3)
   {
@@ -308,7 +292,7 @@ weather_main_6h_Den[1:35888]=NA
 weather_description_6h_Den[1:35888]=NA 
 
 
-for(i in 7:35888)
+for(i in 8:35888)
 { 
   if (Denver$ind_6[i]==6)
   {
@@ -387,7 +371,7 @@ weather_main_12h_Den[1:35888]=NA
 weather_description_12h_Den[1:35888]=NA 
 
 
-for(i in 13:35888)
+for(i in 14:35888)
 { 
   if (Denver$ind_12[i]==12)
   {
@@ -466,7 +450,7 @@ weather_id_24h_Den[1:35888]=NA
 weather_main_24h_Den[1:35888]=NA      
 weather_description_24h_Den[1:35888]=NA 
 
-for(i in 25:35888)
+for(i in 26:35888)
 { 
   if (Denver$ind_24[i]==24)
   {
@@ -576,12 +560,12 @@ for(i in 1:35888)
     {descr_ind[i]=0} 
 }
 
-for(i in 25:35888)
+for(i in 1:35863)
 {
-  prev_sum[i]=sum(descr_ind[(i-24):i])
+  prev_sum[i]=sum(descr_ind[(i+1):(i+24)])
 }
 
-for(i in 25:35888)
+for(i in 1:34864)
 {
   if(prev_sum[i]>0)
   {
@@ -598,7 +582,6 @@ rm(resp_ind)
 rm(prev_sum)
 rm(descr_ind)
 rm(i)
-rm(k)
 ```
 
 ############################################################################################################
