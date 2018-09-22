@@ -556,22 +556,42 @@ load("Denver_24h.rda")
 ############################################################################################################
 Calculate indicator response variable
 ############################################################################################################
-```{r eval=FALSE, include=FALSE}
+```{r include=FALSE}
 descr_ind=c()
 descr_ind[1:35888]=NA
 
 main_descr=c("Drizzle","Fog","Mist","Rain","Snow","Squall","Thunderstorm")
 
-for(i in 25:3588)
+for(i in 25:35888)
 {
-  if(
-    (for(k in 1:24)
-      {
-        FinalDat$weather_main[i-k+1]=="Drizzel"  
-      }) 
-    
-    )
+  if((FinalDat$weather_main[i]=="Drizzle")|(FinalDat$weather_main[i]=="Fog")|(FinalDat$weather_main[i]=="Mist")|
+     (FinalDat$weather_main[i]=="Rain")|(FinalDat$weather_main[i]=="Snow")|(FinalDat$weather_main[i]=="Squall")|
+     (FinalDat$weather_main[i]=="Thunderstorm"))
+    {descr_ind[i]=1}
+  else
+    {descr_ind[i]=0} 
 }
+
+prev_sum=c()
+prev_sum[1:35888]=NA
+
+for(i in 25:35888)
+{
+  prev_sum[i]=sum(descr_ind[(i-24):i])
+}
+
+resp_ind=c()
+resp_ind[1:35888]=NA
+
+for(i in 50:35888)
+{
+  if(prev_sum[i]>0)
+  {
+    resp_ind[i]=1
+  }
+}
+
+
 
 ```
 
