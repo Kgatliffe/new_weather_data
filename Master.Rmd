@@ -13,14 +13,12 @@ rm(WD)
 
 Load Libraries & Install Packages
 ```{r include=FALSE}
-install.packages("lubridate")
 library(lubridate)
 ```
 
 Load Data files Denver.rda and CrestedButte.rda
 ```{r, include=FALSE}
-load("DenverCorrect.rda")
-names(Denver)
+load("DenverK.rda")
 ```
 
 Create Time-Formatting variable data for Denver data
@@ -116,7 +114,6 @@ weather_id_1h_Den=c()
 weather_main_1h_Den=c()      
 weather_description_1h_Den=c() 
 
-dt_1h_Den[1]=NA         
 temp_1h_Den=c()              
 temp_min_1h_Den=c()     
 temp_max_1h_Den=c()        
