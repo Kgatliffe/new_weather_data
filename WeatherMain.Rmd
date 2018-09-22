@@ -1,0 +1,128 @@
+############################################################################################################
+Translate Weather-Main Variables
+############################################################################################################
+```{r include = FALSE}
+weather_main_new = c()
+weather_main_factor=as.factor(FinalDat$weather_main)
+weather_main_new[1:35888] = NA
+
+weather_main_new_1h = c()
+weather_main_1h_factor=as.factor(FinalDat$weather_main_1h_Den)
+weather_main_new_1h[1:35888] = NA
+
+weather_main_new_3h = c()
+weather_main_new_3h[1:35888] = NA
+weather_main_new_6h = c()
+weather_main_new_6h[1:35888] = NA
+weather_main_new_12h = c()
+weather_main_new_12h[1:35888] = NA
+weather_main_new_24h = c()
+weather_main_new_24h[1:35888] = NA
+
+for (i in 1:35888)
+{
+  if ((FinalDat$weather_main[i] == 'Drizzle') |
+      (FinalDat$weather_main[i] == 'Fog') |
+      (FinalDat$weather_main[i] == 'Mist') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Snow') |
+      (FinalDat$weather_main[i] == 'Squall') |
+      (FinalDat$weather_main[i] == 'Thunderstorm'))
+  {weather_main_new[i] <- 1}
+  
+      else
+    {
+      weather_main_new[i] <- 0
+    }
+}
+
+for (i in 100:35888)
+{
+  if ((weather_main_1h_factor[i] == 3) |
+      (weather_main_1h_factor[i] == 5) |
+      (weather_main_1h_factor[i] == 7) |
+      (weather_main_1h_factor[i] == 8) |
+      (weather_main_1h_factor[i] == 10) |
+      (weather_main_1h_factor[i] == 11) |
+      (weather_main_1h_factor[i] == 12))
+    {weather_main_new_1h[i] <- 1}
+    else
+    {
+      weather_main_new_1h[i] <- 0
+    }
+}
+
+for (i in 5:35888)
+{
+  if ((FinalDat$weather_main_3h[i] == 'Drizzle') |
+      (FinalDat$weather_main_3h[i] == 'Fog') |
+      (FinalDat$weather_main_3h[i] == 'Mist') |
+      (FinalDat$weather_main_3h[i] == 'Rain') |
+      (FinalDat$weather_main_3h[i] == 'Rain') |
+      (FinalDat$weather_main_3h[i] == 'Snow') |
+      (FinalDat$weather_main_3h[i] == 'Squall') |
+      (FinalDat$weather_main_3h[i] == 'Thunderstorm'))
+  {weather_main_new_3h[i] <- 1}
+  
+      else
+    {
+      weather_main_new_3h[i] <- 0
+    }
+}
+
+for (i in 8:35888)
+{
+  if ((FinalDat$weather_main_6h[i] == 'Drizzle') |
+      (FinalDat$weather_main_6h[i] == 'Fog') |
+      (FinalDat$weather_main_6h[i] == 'Mist') |
+      (FinalDat$weather_main_6h[i] == 'Rain') |
+      (FinalDat$weather_main_6h[i] == 'Rain') |
+      (FinalDat$weather_main_6h[i] == 'Snow') |
+      (FinalDat$weather_main_6h[i] == 'Squall') |
+      (FinalDat$weather_main_6h[i] == 'Thunderstorm'))
+  {weather_main_new_6h[i] <- 1}
+  
+      else
+    {
+      weather_main_new_6h[i] <- 0
+    }
+}
+
+for (i in 14:35888)
+{
+  if ((FinalDat$weather_main_12h[i] == 'Drizzle') |
+      (FinalDat$weather_main_12h[i] == 'Fog') |
+      (FinalDat$weather_main_12h[i] == 'Mist') |
+      (FinalDat$weather_main_12h[i] == 'Rain') |
+      (FinalDat$weather_main_12h[i] == 'Rain') |
+      (FinalDat$weather_main_12h[i] == 'Snow') |
+      (FinalDat$weather_main_12h[i] == 'Squall') |
+      (FinalDat$weather_main_12h[i] == 'Thunderstorm'))
+  {weather_main_new_12h[i] <- 1}  
+  
+      else
+    {
+      weather_main_new_12h[i] <- 0
+    }
+}
+
+for (i in 26:53888)
+{
+    if ((FinalDat$weather_main_24h[i] == 'Drizzle') |
+      (FinalDat$weather_main_24h[i] == 'Fog') |
+      (FinalDat$weather_main_24h[i] == 'Mist') |
+      (FinalDat$weather_main_24h[i] == 'Rain') |
+      (FinalDat$weather_main_24h[i] == 'Snow') |
+      (FinalDat$weather_main_24h[i] == 'Squall') |
+      (FinalDat$weather_main_24h[i] == 'Thunderstorm'))
+    {weather_main_new_24h[i] <- 1} 
+  
+      else
+    {
+      weather_main_new_24h[i] <- 0
+    }
+}
+
+
+```
