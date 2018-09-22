@@ -1,0 +1,162 @@
+```{r}
+dat<-FinalDat
+#	dim(dat)
+#	names(dat)
+
+	ans <- glm(as.factor(Question) ~ temp+temp_min+temp_max+pressure+humidity+wind_speed+wind_deg+rain_1h
++rain_3h+snow_1h+snow_3h+clouds_all
+, family=binomial(), data=FinalDat)
+	
+	summary(ans)
+```
+
+```{r}
+
+	# drop alcohol
+
+	ans <- glm(as.factor(chd) ~ sbp + tobacco + ldl + famhist + obesity + age, 
+                  family=binomial(), data=dat)
+	summary(ans)
+
+	# drop sbp
+
+	ans <- glm(as.factor(chd) ~ tobacco + ldl + famhist + obesity + age, 
+                  family=binomial(), data=dat)
+	summary(ans)
+
+	# drop obesity
+
+	ans <- glm(chd ~ tobacco + ldl + famhist + age, 
+                  family=binomial(), data=dat)
+	summary(ans)
+	exp(ans$coef)
+
+	# alternatively the stepAIC procedure can also 
+	# be used
+	library(MASS)
+
+	mod.int <- glm(chd ~ 1, family=binomial(), data=dat)
+	mod.full <- glm(as.factor(chd) ~ sbp + tobacco + ldl + famhist + obesity + alcohol + age, 
+                  family=binomial(), data=dat)
+
+	stepAIC(mod.full, scope=list(upper=mod.full, lower=mod.int),
+              direction="backward")
+
+# let's get predictions
+# note that I'm looking at the training set
+# for an unbiased estimate of the MPE we
+# need to form an independent test set
+
+	ans2 <- predict(ans, dat, type="response")
+	assigned.group <- ans2 > 0.5
+	table(assigned.group, dat$chd)
+	mean(assigned.group != dat$chd)
+
+# let's look at relationships among the predictors
+
+	library(lattice)
+	splom(dat[,c(3,4,10)])
+
+png("plots_heartdisease_ex/family_history_boxplots.png", width=1200,height=400)
+	par(mfrow=c(1,3), mai=c(.8,.8,.2,.2))
+	boxplot(dat$tobacco ~ dat$famhist, xlab="Family History", ylab="Tobacco", cex=2, cex.axis=2,cex.lab=2)
+	boxplot(dat$ldl ~ dat$famhist, xlab="Family History", ylab="LDL", cex=2, cex.axis=2,cex.lab=2)
+	boxplot(dat$age ~ dat$famhist, xlab="Family History", ylab="Age", cex=2, cex.axis=2,cex.lab=2)
+dev.off()
+
+	X <- dat[,c(3,4,10)]
+	cor(X, use="pairwise.complete.obs")
+	
+	t.test(dat$tobacco ~ dat$famhist)
+	t.test(dat$ldl ~ dat$famhist)
+	t.test(dat$age ~ dat$famhist)
+
+
+# for outcomes with more than 2 levels, we can use the
+# multinom function in the nnet package to FIT the model
+
+	library(nnet)
+
+	ans <- multinom(chd ~ sbp + tobacco + ldl + famhist + obesity + alcohol + age, 
+                    data=dat)
+	ans
+	names(ans)
+	summary(ans)
+	ans2 <- summary(ans)
+	ans2$coefficients/ans2$standard.errors
+	Z <- ans2$coefficients/ans2$standard.errors
+	2*(1-pnorm(abs(Z)))
+	
+## same results as glm function!!###	
+	summary(glm(as.factor(chd) ~ sbp + tobacco + ldl + famhist + obesity + alcohol + age, family=binomial(), data=dat))
+
+# PREDICTION STEP
+
+	pred.chd <- predict(ans, dat)
+	temp<-	table(pred.chd, dat$chd)
+	(temp[2,1]+temp[1,2])/sum(temp)
+
+
+###############################  IRIS DATA  ##########################################
+
+#############	
+	ans <- multinom(Species ~ Sepal.Length+Sepal.Width+Petal.Length+Petal.Width,
+                    data=iris)
+	ans
+	summary(ans)
+	ans2 <- summary(ans)
+	ans2$coefficients/ans2$standard.errors
+	Z <- ans2$coefficients/ans2$standard.errors
+	2*(1-pnorm(abs(Z)))
+
+# PREDICTION STEP
+library(psych)  ## for trace function
+
+	pred.sp <- predict(ans, iris)
+	temp<-table(pred.sp, iris$Species)
+	(sum(temp)-tr(temp))/sum(temp)
+
+########	
+	iris$dif_ref<-ifelse(iris$Species=="virginica","1-virginica", ifelse(iris$Species=="versicolor","2-versicolor","3-setosa"))
+ans <- multinom(dif_ref ~ Sepal.Length+Sepal.Width+Petal.Length+Petal.Width,
+                    data=iris)
+	ans
+	ans2 <- summary(ans)
+	ans2$coefficients/ans2$standard.errors
+	Z <- ans2$coefficients/ans2$standard.errors
+	2*(1-pnorm(abs(Z)))
+	
+# PREDICTION STEP
+library(psych)  ## for trace function
+
+	pred.sp <- predict(ans, iris)
+	temp<-table(pred.sp, iris$dif_ref)
+	(sum(temp)-tr(temp))/sum(temp)
+
+	splom(iris,cex=0.6,pscales=0)
+	round(cor(iris[,1:4]),2)
+
+
+##############  testing nested models  ##############
+null_model<-multinom(Species~1,data=iris)
+ans <- multinom(Species ~ Sepal.Length+Sepal.Width+Petal.Length+Petal.Width,
+                    data=iris)
+
+x2<-deviance(null_model)-deviance(ans)
+x2
+
+### parameters for null model is 2 intercept terms, parameters for full model is 2 intercept terms + 4x2 parameters for the slope = 10 (count the coefficients); 10-2 = 8 
+pchisq(x2,df=8,lower.tail=F)
+
+
+nested_model<-multinom(Species~Sepal.Length+Sepal.Width+Petal.Length,data=iris)
+ans <- multinom(Species ~ Sepal.Length+Sepal.Width+Petal.Length+Petal.Width,
+                    data=iris)
+
+x2<-deviance(nested_model)-deviance(ans)
+x2
+
+pchisq(x2,df=2,lower.tail=F)
+
+```
+
