@@ -14,9 +14,18 @@ setwd(WD)
 rm(WD)
 ```
 
-Load Libraries & Install Packages
+Install Packages
 ```{r include=FALSE}
+install.package("dplyr")
+install.package("lubridate")
+install.packages("tidyverse")
+```
+
+Load Packages
+```{r include=FALSE}
+library(dplyr)
 library(lubridate)
+library(tidyverse)
 ```
 ############################################################################################################
 ############################################################################################################
@@ -526,11 +535,6 @@ Clean up Work Space, re-import data sets
 ```{r include=FALSE}
 rm(list=ls())
 load("FinalDat.rda")
-load("Denver_1h.rda")
-load("Denver_3h.rda")
-load("Denver_6h.rda")
-load("Denver_12h.rda")
-load("Denver_24h.rda")
 ```
 ############################################################################################################
 ############################################################################################################
@@ -587,5 +591,78 @@ rm(i)
 ############################################################################################################
 ############################################################################################################
 
+
+
+############################################################################################################
+Translate Weather-Main Variables
+############################################################################################################
+```{r include = FALSE}
+weather_main_new = c()
+weather_main_factor=as.factor(FinalDat$weather_main)
+weather_main_new[1:35888] = NA
+
+for (i in 1:35888)
+{
+  if ((FinalDat$weather_main[i] == 'Drizzle') |
+      (FinalDat$weather_main[i] == 'Fog') |
+      (FinalDat$weather_main[i] == 'Mist') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Snow') |
+      (FinalDat$weather_main[i] == 'Squall') |
+      (FinalDat$weather_main[i] == 'Thunderstorm'))
+  {weather_main_new[i] <- 1}
+  
+      else
+    {
+      weather_main_new[i] <- 0
+    }
+}
+
+#creating weather main indicator
+FinalDat$weather_main_1h_Den_Dummy <- ifelse(FinalDat$weather_main_1h_Den==3 | FinalDat$weather_main_1h_Den==5 |FinalDat$weather_main_1h_Den== 7 | FinalDat$weather_main_1h_Den==8 | FinalDat$weather_main_1h_Den== 10 |FinalDat$weather_main_1h_Den== 11| FinalDat$weather_main_1h_Den==12, 1, 0)
+FinalDat$weather_main_3h_Den_Dummy <- ifelse(FinalDat$weather_main_3h_Den==3 | FinalDat$weather_main_3h_Den==5 |FinalDat$weather_main_3h_Den== 7 | FinalDat$weather_main_3h_Den==8 | FinalDat$weather_main_3h_Den== 10 |FinalDat$weather_main_3h_Den== 11| FinalDat$weather_main_3h_Den==12, 1, 0)
+FinalDat$weather_main_6h_Den_Dummy <- ifelse(FinalDat$weather_main_6h_Den==3 | FinalDat$weather_main_6h_Den==5 |FinalDat$weather_main_6h_Den== 7 | FinalDat$weather_main_6h_Den==8 | FinalDat$weather_main_6h_Den== 10 |FinalDat$weather_main_6h_Den== 11| FinalDat$weather_main_6h_Den==12, 1, 0)
+FinalDat$weather_main_12h_Den_Dummy <- ifelse(FinalDat$weather_main_12h_Den==3 | FinalDat$weather_main_12h_Den==5 |FinalDat$weather_main_12h_Den== 7 | FinalDat$weather_main_12h_Den==8 | FinalDat$weather_main_12h_Den== 10 |FinalDat$weather_main_12h_Den== 11| FinalDat$weather_main_12h_Den==12, 1, 0)
+FinalDat$weather_main_24h_Den_Dummy <- ifelse(FinalDat$weather_main_24h_Den==3 | FinalDat$weather_main_24h_Den==5 |FinalDat$weather_main_24h_Den== 7 | FinalDat$weather_main_24h_Den==8 | FinalDat$weather_main_24h_Den== 10 |FinalDat$weather_main_24h_Den== 11| FinalDat$weather_main_24h_Den==12, 1, 0)
+save(FinalDat, file = 'FinalDat.rda')
+rm(weather_main_factor)
+rm(weather_main_new)
+rm(i)
+```
+############################################################################################################
+############################################################################################################
+
+
+############################################################################################################
+Convert Angle Measurements to 
+############################################################################################################
+```{r include=FALSE}
+## create wind direction variable
+directions <-c("N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","SN")
+deg <- c(0,11.25,33.75,56.25,78.75,101.25,123.75,146.25,168.75,191.25,213.75,236.25,258.75,281.25,303.75,326.25,348.75,360)
+FinalDat$wind_dir <- cut(FinalDat$wind_deg, deg, labels = directions,right = FALSE)
+FinalDat$wind_dir_1h_Den <- cut(FinalDat$wind_deg_1h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_3h_Den <- cut(FinalDat$wind_deg_3h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_6h_Den <- cut(FinalDat$wind_deg_6h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_12h_Den <- cut(FinalDat$wind_deg_12h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_24h_Den <- cut(FinalDat$wind_deg_24h_Den, deg, labels = directions, right = FALSE)
+
+#change the label SN to N
+FinalDat$wind_dir[FinalDat$wind_dir=="SN"] <- c("N")
+FinalDat$wind_dir_1h_Den[FinalDat$wind_dir_1h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_3h_Den[FinalDat$wind_dir_3h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_6h_Den[FinalDat$wind_dir_6h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_12h_Den[FinalDat$wind_dir_12h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_24h_Den[FinalDat$wind_dir_24h_Den=="SN"] <- c("N")
+
+save(FinalDat, file = 'FinalDat.rda')
+
+rm(deg)
+rm(directions)
+```
+
+############################################################################################################
+############################################################################################################
 
 
