@@ -669,9 +669,208 @@ rm(directions)
 Kill unused columns and Rows with NAs
 ############################################################################################################
 ```{r include=FALSE}
-FinalDat2=FinalDat[,-c(1,9,17,22,23,24,25,26,34,41,42,50,57,58,65,73,74,82,89,90,98,105,106)]
+FinalDat2=FinalDat[,-c(1,9,17,22,23,24,25,26,34,41,42,50,57,58,66,73,74,82,89,90,98,105,106)]
 FinalDat2=FinalDat2[complete.cases(FinalDat2),]
 save(FinalDat2, file = 'FinalDat2.rda')
+```
+############################################################################################################
+############################################################################################################
+
+
+
+
+############################################################################################################
+MODEL ANALYSIS
+############################################################################################################
+############################################################################################################
+Define Sample=RANDOM SAMPLE, training and test sets
+############################################################################################################
+```{r include=FALSE}
+load('FinalDat2.rda')
+dat <- FinalDat2
+set.seed(101)
+dat_sample <- dat[sample(nrow(dat), 3000),]
+sample = sample.split(dat_sample, SplitRatio = 0.75)
+trainset = subset(dat_sample, sample == TRUE)
+testset  = subset(dat_sample, sample == FALSE)
+Q_train = as.factor(trainset$Question)
+Q_test = as.factor(testset$Question)
+```
+############################################################################################################
+
+
+############################################################################################################
+############################################################################################################
+24 Hour Model and Analytics
+############################################################################################################
+```{r}
+  ans24hrs <- glm(as.factor(Question) ~ temp_24h_Den
+  + pressure_24h_Den + humidity_24h_Den + wind_speed_24h_Den + wind_dir_24h_Den
+  + rain_1h_24h_Den + rain_3h_24h_Den + snow_1h_24h_Den
+  + snow_3h_24h_Den + clouds_all_24h_Den
+  + weather_main_24h_Den_Dummy,
+  family = binomial(),
+  data = trainset)
+
+summary(ans24hrs)
+plot(ans24hrs)
+
+glm.probs_train = predict(ans24hrs, type = "response")
+glm.probs_test = predict(ans24hrs, testset, type = "response")
+glm_24.pred_train = rep(0, length(trainset$Question))
+glm_24.pred_test = rep(0, length(testset$Question))
+glm_24.pred_train[glm.probs_train > 0.5] = 1
+glm_24.pred_test[glm.probs_test > 0.5] = 1
+table(glm_24.pred_train, Q_train)
+mean(glm_24.pred_train == Q_train)
+table(glm_24.pred_test, Q_test)
+mean(glm_24.pred_test == Q_test)
+
+```
+############################################################################################################
+
+
+############################################################################################################
+############################################################################################################
+12 Hour Model and Analytics
+############################################################################################################
+```{r}
+ans12hrs <- glm(
+  as.factor(Question) ~
+  temp_12h_Den
+  + pressure_12h_Den + humidity_12h_Den + wind_speed_12h_Den + wind_dir_12h_Den
+  + rain_1h_12h_Den + rain_3h_12h_Den + snow_1h_12h_Den + snow_3h_12h_Den 
+  + clouds_all_12h_Den+ weather_main_12h_Den_Dummy
+  + I(pressure_12h_Den - pressure_24h_Den) + I(temp_12h_Den - temp_24h_Den)
+  + I(humidity_12h_Den - humidity_24h_Den) + I(wind_speed_12h_Den - wind_speed_24h_Den)
+  ,family = binomial(), data = trainset)
+
+summary(ans12hrs)
+plot(ans12hrs)
+
+glm.probs_train = predict(ans12hrs, type = "response")
+glm.probs_test = predict(ans12hrs, testset, type = "response")
+glm_12.pred_train = rep(0, length(trainset$Question))
+glm_12.pred_test = rep(0, length(testset$Question))
+glm_12.pred_train[glm.probs_train > 0.5] = 1
+glm_12.pred_test[glm.probs_test > 0.5] = 1
+table(glm_12.pred_train, Q_train)
+mean(glm_12.pred_train == Q_train)
+table(glm_12.pred_test, Q_test)
+mean(glm_12.pred_test == Q_test)
+```
+############################################################################################################
+
+
+############################################################################################################
+############################################################################################################
+6 Hour Model and Analytics
+############################################################################################################
+```{r}
+ans6hrs <- glm(as.factor(Question) ~ temp_6h_Den + pressure_6h_Den + humidity_6h_Den 
+               + wind_speed_6h_Den + wind_dir_6h_Den + rain_1h_6h_Den + rain_3h_6h_Den + snow_1h_6h_Den
+               + snow_3h_6h_Den + clouds_all_6h_Den + weather_main_6h_Den_Dummy
+               + I(pressure_6h_Den - pressure_24h_Den) + I(temp_6h_Den - temp_24h_Den)
+               + I(humidity_6h_Den - humidity_24h_Den) + I(wind_speed_6h_Den - wind_speed_24h_Den)
+               + I(pressure_6h_Den - pressure_12h_Den) + I(temp_6h_Den - temp_12h_Den)
+               + I(humidity_6h_Den - humidity_12h_Den) + I(wind_speed_6h_Den - wind_speed_12h_Den)
+               , family = binomial(), data = trainset)
+
+summary(ans6hrs)
+plot(ans6hrs)
+
+glm.probs_train = predict(ans6hrs, type = "response")
+glm.probs_test = predict(ans6hrs, testset, type = "response")
+glm_6.pred_train = rep(0, length(trainset$Question))
+glm_6.pred_test = rep(0, length(testset$Question))
+glm_6.pred_train[glm.probs_train > 0.5] = 1
+glm_6.pred_test[glm.probs_test > 0.5] = 1
+table(glm_6.pred_train, Q_train)
+mean(glm_6.pred_train == Q_train)
+table(glm_6.pred_test, Q_test)
+mean(glm_6.pred_test == Q_test)
+```
+############################################################################################################
+
+
+
+############################################################################################################
+############################################################################################################
+3 Hour Model and Analytics
+############################################################################################################
+```{r}
+ans3hrs <- glm(as.factor(Question) ~ temp_3h_Den + pressure_3h_Den + humidity_3h_Den 
+               + wind_speed_3h_Den + wind_dir_3h_Den + rain_1h_3h_Den + rain_3h_3h_Den
+               + snow_1h_3h_Den+ snow_3h_3h_Den + clouds_all_3h_Den + weather_main_3h_Den_Dummy
+               + I(pressure_3h_Den - pressure_24h_Den) + I(temp_3h_Den - temp_24h_Den)
+               + I(humidity_3h_Den - humidity_24h_Den) + I(wind_speed_3h_Den - wind_speed_24h_Den)
+               + I(pressure_3h_Den - pressure_12h_Den) + I(temp_3h_Den - temp_12h_Den)
+               + I(humidity_3h_Den - humidity_12h_Den) + I(wind_speed_3h_Den - wind_speed_12h_Den)
+               + I(pressure_3h_Den - pressure_6h_Den) + I(temp_3h_Den - temp_6h_Den)
+               + I(humidity_3h_Den - humidity_6h_Den) + I(wind_speed_3h_Den - wind_speed_6h_Den),
+                family = binomial(),data = trainset)
+	
+summary(ans3hrs)
+plot(ans3hrs)
+
+glm.probs_train = predict(ans3hrs, type = "response")
+glm.probs_test = predict(ans3hrs, testset, type = "response")
+glm_3.pred_train = rep(0, length(trainset$Question))
+glm_3.pred_test = rep(0, length(testset$Question))
+glm_3.pred_train[glm.probs_train > 0.5] = 1
+glm_3.pred_test[glm.probs_test > 0.5] = 1
+table(glm_3.pred_train, Q_train)
+mean(glm_3.pred_train == Q_train)
+table(glm_3.pred_test, Q_test)
+mean(glm_3.pred_test == Q_test)
+```
+############################################################################################################
+
+
+############################################################################################################
+############################################################################################################
+1 Hour Model and Analytics
+############################################################################################################
+```{r}
+ans1hrs <- glm(as.factor(Question) ~ temp_1h_Den + pressure_1h_Den + humidity_1h_Den + wind_speed_1h_Den 
+  + wind_dir_1h_Den + rain_1h_1h_Den + rain_3h_1h_Den + snow_1h_1h_Den + snow_3h_1h_Den 
+  + clouds_all_1h_Den + weather_main_1h_Den_Dummy
+  + I(pressure_1h_Den - pressure_24h_Den) + I(temp_1h_Den - temp_24h_Den)
+  + I(humidity_1h_Den - humidity_24h_Den) + I(wind_speed_1h_Den - wind_speed_24h_Den)
+  + I(pressure_1h_Den - pressure_12h_Den) + I(temp_1h_Den - temp_12h_Den)
+  + I(humidity_1h_Den - humidity_12h_Den) + I(wind_speed_1h_Den - wind_speed_12h_Den)
+  + I(pressure_1h_Den - pressure_6h_Den) + I(temp_1h_Den - temp_6h_Den)
+  + I(humidity_1h_Den - humidity_6h_Den) + I(wind_speed_1h_Den - wind_speed_6h_Den)
+  + I(pressure_1h_Den - pressure_3h_Den) + I(temp_1h_Den - temp_3h_Den)
+  + I(humidity_1h_Den - humidity_3h_Den) + I(wind_speed_1h_Den - wind_speed_3h_Den),family = binomial(),
+  data = trainset)
+	
+summary(ans1hrs)
+plot(ans1hrs)
+
+glm.probs_train = predict(ans1hrs, type = "response")
+glm.probs_test = predict(ans1hrs, testset, type = "response")
+glm_1.pred_train = rep(0, length(trainset$Question))
+glm_1.pred_test = rep(0, length(testset$Question))
+glm_1.pred_train[glm.probs_train > 0.5] = 1
+glm_1.pred_test[glm.probs_test > 0.5] = 1
+table(glm_1.pred_train, Q_train)
+mean(glm_1.pred_train == Q_train)
+table(glm_1.pred_test, Q_test)
+mean(glm_1.pred_test == Q_test)
+```
+############################################################################################################
+
+############################################################################################################
+############################################################################################################
+############################################################################################################
+
+############################################################################################################
+Remove Variables
+############################################################################################################
+```{r include=FALSE}
+rm(list=ls())
+load('FinalDat2.rda')
 ```
 ############################################################################################################
 ############################################################################################################
