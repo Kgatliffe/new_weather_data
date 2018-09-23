@@ -1,26 +1,26 @@
 ```{r}
 require(caTools)
-dat<-FinalDat
-set.seed(101) 
-dat_sample<-dat[sample(nrow(dat), 3000), ]
-sample = sample.split(dat_sample$dt, SplitRatio = .75)
-trainset = subset(dat_sample, sample == TRUE)
-testset  = subset(dat_sample, sample == FALSE)
+#dat<-FinalDat
+#set.seed(101) 
+#dat_sample<-dat[sample(nrow(dat), 3000), ]
+#sample = sample.split(dat_sample$dt, SplitRatio = .75)
+#trainset = subset(dat_sample, sample == TRUE)
+#testset  = subset(dat_sample, sample == FALSE)
 
 ######## 24 Hour Model ############
-ans24hrs <- glm(as.factor(Question) ~
-temp_24h_Den
-+pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den+wind_dir_24h_Den
-+rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
+ ans24hrs <- glm(as.factor(Question) ~
+ temp_24h_Den
+ +pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den+wind_dir_24h_Den
+ +rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
 +snow_3h_24h_Den+clouds_all_24h_Den
-+weather_main_24h_Den_Dummy, family=binomial(), data=trainset)
+ +weather_main_24h_Den_Dummy, family=binomial(), data=trainset)
 
-summary(ans24hrs)
-coef(ans24hrs)
-summary(ans24hrs)$coef
-summary(ans24hrs)$coef[,4]
-glm.probs=predict(ans24hrs,type="response")
-glm.probs[1:10]
+ summary(ans24hrs)
+ coef(ans24hrs)
+ summary(ans24hrs)$coef
+ summary(ans24hrs)$coef[,4]
+ glm.probs=predict(ans24hrs,type="response")
+ glm.probs[1:10]
 
 summary(ans24hrs)
 
@@ -31,8 +31,11 @@ temp_12h_Den
 +rain_1h_12h_Den+rain_3h_12h_Den+snow_1h_12h_Den
 +snow_3h_12h_Den+clouds_all_12h_Den
 +weather_main_12h_Den_Dummy
-+I(pressure_12h_Den-pressure_24h_Den)+I(temp_12h_Den-temp_24h_Den)
-+I(humidity_12h_Den-humidity_24h_Den)+I(wind_speed_12h_Den-wind_speed_24h_Den)
++I((pressure_12h_Den-pressure_24h_Den)/(24-12))
++I((temp_12h_Den-temp_24h_Den)/(24-12))
++I((humidity_12h_Den-humidity_24h_Den)/(24-12))
++I((wind_speed_12h_Den-wind_speed_24h_Den)/(24-12))
++I((clouds_all_12h_Den-clouds_all_24h_Den)/(24-12))
 , family=binomial(), data=trainset)
 	
 summary(ans12hrs)
@@ -44,14 +47,21 @@ temp_6h_Den
 +rain_1h_6h_Den+rain_3h_6h_Den+snow_1h_6h_Den
 +snow_3h_6h_Den+clouds_all_6h_Den
 +weather_main_6h_Den_Dummy
-+I(pressure_6h_Den-pressure_24h_Den)+I(temp_6h_Den-temp_24h_Den)
-+I(humidity_6h_Den-humidity_24h_Den)+I(wind_speed_6h_Den-wind_speed_24h_Den)
-+I(pressure_6h_Den-pressure_12h_Den)+I(temp_6h_Den-temp_12h_Den)
-+I(humidity_6h_Den-humidity_12h_Den)+I(wind_speed_6h_Den-wind_speed_12h_Den)
+
++I((pressure_6h_Den-pressure_24h_Den)/(24-6))
++I((temp_6h_Den-temp_24h_Den)/(24-6))
++I((humidity_6h_Den-humidity_24h_Den)/(24-6))
++I((wind_speed_6h_Den-wind_speed_24h_Den)/(24-6))
++I((clouds_all_6h_Den-clouds_all_24h_Den)/(24-6))
+
++I((pressure_6h_Den-pressure_12h_Den)/(12-6))
++I((temp_6h_Den-temp_12h_Den)/(12-6))
++I((humidity_6h_Den-humidity_12h_Den)/(12-6))
++I((wind_speed_6h_Den-wind_speed_12h_Den)/(12-6))
++I((clouds_all_6h_Den-clouds_all_12h_Den)/(12-6))
+
 , family=binomial(), data=trainset)
 	
-summary(ans6hrs)
-plot(ans6hrs)
 ######## 3 Hour Model ############
 ans3hrs <- glm(as.factor(Question) ~
 temp_3h_Den
@@ -59,16 +69,25 @@ temp_3h_Den
 +rain_1h_3h_Den+rain_3h_3h_Den+snow_1h_3h_Den
 +snow_3h_3h_Den+clouds_all_3h_Den
 +weather_main_3h_Den_Dummy
-+I(pressure_3h_Den-pressure_24h_Den)+I(temp_3h_Den-temp_24h_Den)
-+I(humidity_3h_Den-humidity_24h_Den)+I(wind_speed_3h_Den-wind_speed_24h_Den)
-+I(pressure_3h_Den-pressure_12h_Den)+I(temp_3h_Den-temp_12h_Den)
-+I(humidity_3h_Den-humidity_12h_Den)+I(wind_speed_3h_Den-wind_speed_12h_Den)
-+I(pressure_3h_Den-pressure_6h_Den)+I(temp_3h_Den-temp_6h_Den)
-+I(humidity_3h_Den-humidity_6h_Den)+I(wind_speed_3h_Den-wind_speed_6h_Den)
++I((pressure_3h_Den-pressure_24h_Den)/(24-3))
++I((temp_3h_Den-temp_24h_Den)/(24-3))
++I((humidity_3h_Den-humidity_24h_Den)/(24-3))
++I((wind_speed_3h_Den-wind_speed_24h_Den)/(24-3))
++I((clouds_all_3h_Den-clouds_all_24h_Den)/(24-3))
+
++I((pressure_3h_Den-pressure_12h_Den)/(12-3))
++I((temp_3h_Den-temp_12h_Den)/(12-3))
++I((humidity_3h_Den-humidity_12h_Den)/(12-3))
++I((wind_speed_3h_Den-wind_speed_12h_Den)/(12-3))
++I((clouds_all_3h_Den-clouds_all_12h_Den)/(12-3))
+
++I((pressure_3h_Den-pressure_6h_Den)/(6-3))
+   +I((temp_3h_Den-temp_6h_Den)/(6-3))
++I((humidity_3h_Den-humidity_6h_Den)/(6-3))
+   +I((wind_speed_3h_Den-wind_speed_6h_Den)/(6-3))
++I((clouds_all_3h_Den-clouds_all_6h_Den)/(6-3))
 , family=binomial(), data=trainset)
 	
-summary(ans3hrs)
-plot(ans3hrs)
 ######## 1 Hour Model ############
 ans1hrs <- glm(as.factor(Question) ~
 temp_1h_Den
@@ -76,17 +95,33 @@ temp_1h_Den
 +rain_1h_1h_Den+rain_3h_1h_Den+snow_1h_1h_Den
 +snow_3h_1h_Den+clouds_all_1h_Den
 +weather_main_1h_Den_Dummy
-+I(pressure_1h_Den-pressure_24h_Den)+I(temp_1h_Den-temp_24h_Den)
-+I(humidity_1h_Den-humidity_24h_Den)+I(wind_speed_1h_Den-wind_speed_24h_Den)
-+I(pressure_1h_Den-pressure_12h_Den)+I(temp_1h_Den-temp_12h_Den)
-+I(humidity_1h_Den-humidity_12h_Den)+I(wind_speed_1h_Den-wind_speed_12h_Den)
-+I(pressure_1h_Den-pressure_6h_Den)+I(temp_1h_Den-temp_6h_Den)
-+I(humidity_1h_Den-humidity_6h_Den)+I(wind_speed_1h_Den-wind_speed_6h_Den)
-+I(pressure_1h_Den-pressure_3h_Den)+I(temp_1h_Den-temp_3h_Den)
-+I(humidity_1h_Den-humidity_3h_Den)+I(wind_speed_1h_Den-wind_speed_3h_Den)
+
++I((pressure_1h_Den-pressure_24h_Den)/(24-1))
++I((temp_1h_Den-temp_24h_Den)/(24-1))
++I((humidity_1h_Den-humidity_24h_Den)/(24-1))
++I((wind_speed_1h_Den-wind_speed_24h_Den)/(24-1))
++I((clouds_all_1h_Den-clouds_all_24h_Den)/(24-1))
+
++I((pressure_1h_Den-pressure_12h_Den)/(12-1))
++I((temp_1h_Den-temp_12h_Den)/(12-1))
++I((humidity_1h_Den-humidity_12h_Den)/(12-1))
++I((wind_speed_1h_Den-wind_speed_12h_Den)/(12-1))
++I((clouds_all_1h_Den-clouds_all_12h_Den)/(12-1))
+
++I((pressure_1h_Den-pressure_6h_Den)/(6-1))
++I((temp_1h_Den-temp_6h_Den)/(6-1))
++I((humidity_1h_Den-humidity_6h_Den)/(6-1))
++I((wind_speed_1h_Den-wind_speed_6h_Den)/(6-1))
++I((clouds_all_1h_Den-clouds_all_6h_Den)/(6-1))
+
++I((pressure_1h_Den-pressure_3h_Den)/(3-1))
++I((temp_1h_Den-temp_3h_Den)/(3-1))
++I((humidity_1h_Den-humidity_3h_Den)/(3-1))
++I((wind_speed_1h_Den-wind_speed_3h_Den)/(3-1))
++I((clouds_all_1h_Den-clouds_all_3h_Den)/(3-1))
+
 , family=binomial(), data=trainset)
 	
-summary(ans1hrs)
-plot(ans1hrs)
+
 ```
 
