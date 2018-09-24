@@ -1,12 +1,31 @@
 ```{r}
 require(caTools)
-#dat<-FinalDat
-#set.seed(101) 
-#dat_sample<-dat[sample(nrow(dat), 3000), ]
-#sample = sample.split(dat_sample$dt, SplitRatio = .75)
-#trainset = subset(dat_sample, sample == TRUE)
-#testset  = subset(dat_sample, sample == FALSE)
+dat<-FinalDat2
+set.seed(101) 
+dat_sample<-dat[sample(nrow(dat), 3000), ]
+sample = sample.split(dat_sample$pressure, SplitRatio = .75)
+trainset = subset(dat_sample, sample == TRUE)
+testset  = subset(dat_sample, sample == FALSE)
 
+mean_train<-apply(trainset, 2, mean)
+var_train<-apply(trainset, 2, var)
+
+train <- t((t(trainset)-mean_train)/sqrt(var_train))
+apply(train, 2, mean)
+apply(train, 2, var)
+
+trainset<-data.frame(train, lpsa=dat[dat$train == T,]$lpsa)
+
+##	NEED TO APPLY TRAINING MEAN AND STDEV TO STANDARDIZE TEST SET!!  ##
+test<-as.data.frame(t((t(dat[dat$train == F, 1:8])-mean_train)/sqrt(var_train)))
+dat.test <- data.frame(test, lpsa=dat[dat$train == F,]$lpsa)
+apply(test, 2, mean)
+apply(test, 2, var)
+
+Q_train = as.factor(trainset$Question)
+Q_test = as.factor(testset$Question)
+```
+```{r}
 ######## 24 Hour Model ############
  ans24hrs <- glm(as.factor(Question) ~
  temp_24h_Den
@@ -15,15 +34,27 @@ require(caTools)
 +snow_3h_24h_Den+clouds_all_24h_Den
  +weather_main_24h_Den_Dummy, family=binomial(), data=trainset)
 
- summary(ans24hrs)
- coef(ans24hrs)
- summary(ans24hrs)$coef
- summary(ans24hrs)$coef[,4]
- glm.probs=predict(ans24hrs,type="response")
- glm.probs[1:10]
+# summary(ans24hrs)
+# coef(ans24hrs)
+# summary(ans24hrs)$coef
+# summary(ans24hrs)$coef[,4]
+# glm.probs=predict(ans24hrs,type="response")
+# glm.probs[1:40]
 
 summary(ans24hrs)
 
+glm.probs_train = predict(ans24hrs, type = "response")
+glm.probs_test = predict(ans24hrs, testset, type = "response")
+glm_24.pred_train = rep(0, length(trainset$Question))
+glm_24.pred_test = rep(0, length(testset$Question))
+glm_24.pred_train[glm.probs_train > 0.5] = 1
+glm_24.pred_test[glm.probs_test > 0.5] = 1
+table(glm_24.pred_train, Q_train)
+mean(glm_24.pred_train == Q_train)
+table(glm_24.pred_test, Q_test)
+mean(glm_24.pred_test == Q_test)
+```
+```{r}
 ######## 12 Hour Model ############
 ans12hrs <- glm(as.factor(Question) ~
 temp_12h_Den
@@ -39,7 +70,19 @@ temp_12h_Den
 , family=binomial(), data=trainset)
 	
 summary(ans12hrs)
+glm.probs_train = predict(ans12hrs, type = "response")
+glm.probs_test = predict(ans12hrs, testset, type = "response")
+glm_12.pred_train = rep(0, length(trainset$Question))
+glm_12.pred_test = rep(0, length(testset$Question))
+glm_12.pred_train[glm.probs_train > 0.5] = 1
+glm_12.pred_test[glm.probs_test > 0.5] = 1
+table(glm_12.pred_train, Q_train)
+mean(glm_12.pred_train == Q_train)
+table(glm_12.pred_test, Q_test)
+mean(glm_12.pred_test == Q_test)
 
+```
+```{r}
 ######## 6 Hour Model ############
 ans6hrs <- glm(as.factor(Question) ~
 temp_6h_Den
@@ -61,7 +104,21 @@ temp_6h_Den
 +I((clouds_all_6h_Den-clouds_all_12h_Den)/(12-6))
 
 , family=binomial(), data=trainset)
+
+glm.probs_train = predict(ans6hr, type = "response")
+glm.probs_test = predict(ans6hr, testset, type = "response")
+glm_6.pred_train = rep(0, length(trainset$Question))
+glm_6.pred_test = rep(0, length(testset$Question))
+glm_6.pred_train[glm.probs_train > 0.5] = 1
+glm_6.pred_test[glm.probs_test > 0.5] = 1
+table(glm_6.pred_train, Q_train)
+mean(glm_6.pred_train == Q_train)
+table(glm_6.pred_test, Q_test)
+mean(glm_6.pred_test == Q_test)
+
 	
+```
+```{r}
 ######## 3 Hour Model ############
 ans3hrs <- glm(as.factor(Question) ~
 temp_3h_Den
@@ -87,7 +144,20 @@ temp_3h_Den
    +I((wind_speed_3h_Den-wind_speed_6h_Den)/(6-3))
 +I((clouds_all_3h_Den-clouds_all_6h_Den)/(6-3))
 , family=binomial(), data=trainset)
-	
+
+glm.probs_train = predict(ans3hrs, type = "response")
+glm.probs_test = predict(ans3hrs, testset, type = "response")
+glm_3.pred_train = rep(0, length(trainset$Question))
+glm_3.pred_test = rep(0, length(testset$Question))
+glm_3.pred_train[glm.probs_train > 0.5] = 1
+glm_3.pred_test[glm.probs_test > 0.5] = 1
+table(glm_3.pred_train, Q_train)
+mean(glm_3.pred_train == Q_train)
+table(glm_3.pred_test, Q_test)
+mean(glm_3.pred_test == Q_test)
+
+```
+```{r}	
 ######## 1 Hour Model ############
 ans1hrs <- glm(as.factor(Question) ~
 temp_1h_Den
@@ -122,6 +192,16 @@ temp_1h_Den
 
 , family=binomial(), data=trainset)
 	
+glm.probs_train = predict(ans1hrs, type = "response")
+glm.probs_test = predict(ans1hrs, testset, type = "response")
+glm_1.pred_train = rep(0, length(trainset$Question))
+glm_1.pred_test = rep(0, length(testset$Question))
+glm_1.pred_train[glm.probs_train > 0.5] = 1
+glm_1.pred_test[glm.probs_test > 0.5] = 1
+table(glm_1.pred_train, Q_train)
+mean(glm_1.pred_train == Q_train)
+table(glm_1.pred_test, Q_test)
+mean(glm_1.pred_test == Q_test)
 
 ```
 
