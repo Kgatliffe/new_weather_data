@@ -109,7 +109,9 @@ dat.test1<-dat.test[dat.test1x]
 
 	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train24)
 	mod.full <- glm(as.factor(Question.1) ~ .,family=binomial() ,data=dat.train24)
+```
 	
+```{r}
 	# forward selection
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
@@ -119,12 +121,17 @@ dat.test1<-dat.test[dat.test1x]
 	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
 	pe <- mean( (dat.test$Question - predicted.y)^2 )
 pe
-
+```
+	
+```{r}
 	# backward selection
 stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
 ans.backward <- stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
 	# stepwise selection
 stepAIC(mod.int, direction="both",
              scope=list(lower=mod.int, upper= mod.full))
@@ -133,6 +140,9 @@ stepAIC(mod.int, direction="both",
 ```{r}
 	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train12,control = list(maxit = 50))
 	mod.full <- glm(as.factor(Question.1) ~ .,family=binomial() ,data=dat.train12,control = list(maxit = 50))
+```
+	
+```{r}
 	# forward selection
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
@@ -142,12 +152,17 @@ stepAIC(mod.int, direction="both",
 	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
 	pe <- mean( (dat.test$Question - predicted.y)^2 )
 pe
-
+```
+	
+```{r}
 	# backward selection
 stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
 ans.backward <- stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
 	# stepwise selection
 stepAIC(mod.int, direction="both",
              scope=list(lower=mod.int, upper= mod.full))
@@ -157,9 +172,10 @@ stepAIC(mod.int, direction="both",
 ```{r}
 	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train6,control = list(maxit = 100))
 	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train6,control = list(maxit = 1000))
-
+```
 	
-		# forward selection
+```{r}
+	# forward selection
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
 	ans.forward <- stepAIC(mod.int, direction="forward",
@@ -168,12 +184,17 @@ stepAIC(mod.int, direction="both",
 	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
 	pe <- mean( (dat.test$Question - predicted.y)^2 )
 pe
-
+```
+	
+```{r}
 	# backward selection
 stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
 ans.backward <- stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
 	# stepwise selection
 stepAIC(mod.int, direction="both",
              scope=list(lower=mod.int, upper= mod.full))
@@ -183,8 +204,10 @@ stepAIC(mod.int, direction="both",
 	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train3,control = list(maxit = 100))
 	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train3,control = list(maxit = 100))
 
+```
 	
-		# forward selection
+```{r}
+	# forward selection
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
 	ans.forward <- stepAIC(mod.int, direction="forward",
@@ -193,12 +216,17 @@ stepAIC(mod.int, direction="both",
 	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
 	pe <- mean( (dat.test$Question - predicted.y)^2 )
 pe
-
+```
+	
+```{r}
 	# backward selection
 stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
 ans.backward <- stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
 	# stepwise selection
 stepAIC(mod.int, direction="both",
              scope=list(lower=mod.int, upper= mod.full))
@@ -207,8 +235,10 @@ stepAIC(mod.int, direction="both",
 	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train1,control = list(maxit = 100))
 	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train1,control = list(maxit = 100))
 
+```
 	
-		# forward selection
+```{r}
+	# forward selection
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
 	ans.forward <- stepAIC(mod.int, direction="forward",
@@ -217,12 +247,17 @@ stepAIC(mod.int, direction="both",
 	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
 	pe <- mean( (dat.test$Question - predicted.y)^2 )
 pe
-
+```
+	
+```{r}
 	# backward selection
 stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
 ans.backward <- stepAIC(mod.full,direction="backward",
              scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
 	# stepwise selection
 stepAIC(mod.int, direction="both",
              scope=list(lower=mod.int, upper= mod.full))
