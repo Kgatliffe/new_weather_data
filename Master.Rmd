@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 ############################################################################################################
 Weather Data By: Kathleen Gatliffe, Leo Dingxuan, Lee Panter
 ############################################################################################################
@@ -36,7 +41,7 @@ rm(WD)
 ```
 ##
 Install Packages (checking for installation)
-```{r include=FALSE}
+```{r eval=FALSE, include=FALSE}
 install.packages("dplyr")
 install.packages("lubridate")
 install.packages("tidyverse")
@@ -44,7 +49,7 @@ install.packages("MASS")
 ```
 ##
 Load Packages
-```{r include=FALSE}
+```{r eval= FALSE, include=FALSE}
 library(dplyr)
 library(lubridate)
 #library(tidyverse)
@@ -75,6 +80,7 @@ load("DenverK.rda")
 Create Time-Formatting variable data for Denver data
 ##
 ```{r include=FALSE}
+library(lubridate)
 dt_iso_col_denver=Denver$dt_iso
 year_Den=year(dt_iso_col_denver)
 month_Den=month(dt_iso_col_denver)
@@ -808,6 +814,7 @@ dat.test1<-dat.test[dat.test1x]
 	
 ```{r}
 	# forward selection
+ library(MASS)
 	stepAIC(mod.int, direction="forward",
               scope=list(lower=mod.int, upper= mod.full))
 	ans.forward <- stepAIC(mod.int, direction="forward",
