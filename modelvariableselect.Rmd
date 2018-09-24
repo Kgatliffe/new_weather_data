@@ -1,0 +1,215 @@
+```{r}
+require(caTools)
+dat<-FinalDat2
+dat<-FinalDat2[-c(1,14,90:95)]
+set.seed(101) 
+dat_sample<-dat[sample(nrow(dat), 3000), ]
+sample = sample.split(dat_sample$pressure, SplitRatio = .75)
+trainset = subset(dat_sample, sample == TRUE)
+testset  = subset(dat_sample, sample == FALSE)
+
+mean_train<-apply(trainset, 2, mean)
+var_train<-apply(trainset, 2, var)
+
+train <- t((t(trainset)-mean_train)/sqrt(var_train))
+apply(train, 2, mean)
+apply(train, 2, var)
+
+dat.train<-data.frame(train, Question=trainset$Question)
+
+##	NEED TO APPLY TRAINING MEAN AND STDEV TO STANDARDIZE TEST SET!!  ##
+test<-as.data.frame(t((t(testset)-mean_train)/sqrt(var_train)))
+dat.test <- data.frame(test, Question=testset$Question)
+apply(test, 2, mean)
+apply(test, 2, var)
+
+
+dat.train24x <- names(dat.train) %in% c("temp_24h_Den","pressure_24h_Den",
+"humidity_24h_Den","wind_speed_24h_Den","rain_1h_24h_Den","rain_3h_24h_Den",
+"snow_1h_24h_Den","snow_3h_24h_Den","clouds_all_24h_Den","weather_main_24h_Den_Dummy","Question.1")
+dat.train24<-dat.train[dat.train24x]
+
+dat.test24x <- names(dat.test) %in% c("temp_24h_Den","pressure_24h_Den",
+"humidity_24h_Den","wind_speed_24h_Den","rain_1h_24h_Den","rain_3h_24h_Den",
+"snow_1h_24h_Den","snow_3h_24h_Den","clouds_all_24h_Den","weather_main_24h_Den_Dummy","Question.1") 
+dat.test24<-dat.test[dat.test24x]
+
+dat.train12x <- names(dat.train) %in% c("temp_12h_Den","pressure_12h_Den",
+"humidity_12h_Den","wind_speed_12h_Den","rain_1h_12h_Den",
+"rain_3h_12h_Den","snow_1h_12h_Den","snow_3h_12h_Den","clouds_all_12h_Den",
+"Question","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure1224","humidity1224",
+"temp1224","wind_speed1224","clouds_all1224","Question.1")
+dat.train12<-dat.train[dat.train12x]
+
+dat.test12x <- names(dat.test) %in% c("temp_12h_Den","pressure_12h_Den",
+"humidity_12h_Den","wind_speed_12h_Den","rain_1h_12h_Den",
+"rain_3h_12h_Den","snow_1h_12h_Den","snow_3h_12h_Den","clouds_all_12h_Den",
+"Question","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure1224","humidity1224",
+"temp1224","wind_speed1224","clouds_all1224","Question.1") 
+dat.test12<-dat.test[dat.test12x]
+
+dat.train6x <- names(dat.train) %in% c("temp_6h_Den","pressure_6h_Den","humidity_6h_Den","wind_speed_6h_Den",
+"rain_1h_6h_Den","rain_3h_6h_Den","snow_1h_6h_Den","snow_3h_6h_Den",
+"clouds_all_6h_Den","weather_main_6h_Den_Dummy",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy","pressure624",
+"humidity624","temp624","wind_speed624","clouds_all624","pressure612",
+"humidity612","temp612","wind_speed612","clouds_all612","Question.1") 
+dat.train6<-dat.train[dat.train6x]
+
+dat.test6x <- names(dat.test) %in% c("temp_6h_Den","pressure_6h_Den","humidity_6h_Den","wind_speed_6h_Den",
+"rain_1h_6h_Den","rain_3h_6h_Den","snow_1h_6h_Den","snow_3h_6h_Den",
+"clouds_all_6h_Den","weather_main_6h_Den_Dummy",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy","pressure624",
+"humidity624","temp624","wind_speed624","clouds_all624","pressure612",
+"humidity612","temp612","wind_speed612","clouds_all612","Question.1") 
+dat.test6<-dat.test[dat.test6x]
+
+dat.train3x <- names(dat.train) %in% c("temp_3h_Den","pressure_3h_Den","humidity_3h_Den",
+"wind_speed_3h_Den","rain_1h_3h_Den","rain_3h_3h_Den","snow_1h_3h_Den",
+"snow_3h_3h_Den","clouds_all_3h_Den","weather_main_3h_Den_Dummy",
+"weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure324","humidity324","temp324","wind_speed324","clouds_all324",
+"pressure312","humidity312","temp312","wind_speed312","clouds_all312",
+"pressure36","humidity36","temp36","wind_speed36","clouds_all36","Question.1") 
+dat.train3<-dat.train[dat.train3x]
+
+dat.test3x <- names(dat.test) %in% 
+  c("temp_3h_Den","pressure_3h_Den","humidity_3h_Den",
+"wind_speed_3h_Den","rain_1h_3h_Den","rain_3h_3h_Den","snow_1h_3h_Den",
+"snow_3h_3h_Den","clouds_all_3h_Den","weather_main_3h_Den_Dummy",
+"weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure324","humidity324","temp324","wind_speed324","clouds_all324",
+"pressure312","humidity312","temp312","wind_speed312","clouds_all312",
+"pressure36","humidity36","temp36","wind_speed36","clouds_all36","Question.1") 
+dat.test3<-dat.test[dat.test3x]
+
+dat.train1x <- names(dat.train) %in% c("temp_1h_Den","pressure_1h_Den",
+"humidity_1h_Den","wind_speed_1h_Den","rain_1h_1h_Den","rain_3h_1h_Den",
+"snow_1h_1h_Den","snow_3h_1h_Den","clouds_all_1h_Den","weather_main_1h_Den_Dummy",
+"weather_main_3h_Den_Dummy","weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy",
+"weather_main_24h_Den_Dummy","pressure124","humidity124","temp124","wind_speed124",
+"clouds_all124","pressure112","humidity112","temp112","wind_speed112",
+"clouds_all112","pressure16","humidity16","temp16","wind_speed16",
+"clouds_all16","pressure13","humidity13","temp13","wind_speed13",
+"clouds_all13","Question.1") 
+dat.train1<-dat.train[dat.train1x]
+
+dat.test1x <- names(dat.test) %in% c("temp_1h_Den","pressure_1h_Den",
+"humidity_1h_Den","wind_speed_1h_Den","rain_1h_1h_Den","rain_3h_1h_Den",
+"snow_1h_1h_Den","snow_3h_1h_Den","clouds_all_1h_Den","weather_main_1h_Den_Dummy",
+"weather_main_3h_Den_Dummy","weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy",
+"weather_main_24h_Den_Dummy","pressure124","humidity124","temp124","wind_speed124",
+"clouds_all124","pressure112","humidity112","temp112","wind_speed112",
+"clouds_all112","pressure16","humidity16","temp16","wind_speed16",
+"clouds_all16","pressure13","humidity13","temp13","wind_speed13",
+"clouds_all13","Question.1") 
+dat.test1<-dat.test[dat.test1x]
+
+```
+
+```{r}
+# include MASS library so we can use stepAIC
+
+	library(MASS)
+
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train24)
+	mod.full <- glm(as.factor(Question.1) ~ .,family=binomial() ,data=dat.train24)
+		
+	#mod.full <- glm(as.factor(Question) ~ temp_24h_Den
+ #+pressure_24h_Den+humidity_24h_Den+wind_speed_24h_Den
+ #+rain_1h_24h_Den+rain_3h_24h_Den+snow_1h_24h_Den
+#+snow_3h_24h_Den+clouds_all_24h_Den
+# +weather_main_24h_Den_Dummy,family=binomial() ,data=dat.train24)
+	
+```
+
+```{r}	
+	
+	# forward selection
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+
+```{r}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+
+	# forward and stepwise yield the same model:
+	# Question ~ lcavol + lweight + svi + lbph with AIC= -37.82507
+
+	# backward yields a different model:
+	#  Question ~ lcavol + lweight + svi + lbph + age + lcp + pgg45 with AIC=-39.10281
+
+# how about the best subset selection procedure?
+	
+```
+
+```{r}
+
+```
+
+```{r}
+#	library(leaps) #  See ?leaps for more info
+
+#	ans <- leaps(x= dat.train24[1:ncol(dat.train24)-1], y=dat.train24[,ncol(dat.train24)], method="r2")
+#	ans2 <- leaps(x= dat.train24[1:ncol(dat.train24)-1], 
+#	 y=dat.train24[,ncol(dat.train24)], method="adjr2")
+	
+#	cat(names(dat.train24)[1:ncol(dat.train24)-1],"r2\n")
+#temporary<-cbind(id=1:nrow(dat.train24),ans$which, r2=round(ans$r2,4), #adjr2=round(ans2$adjr2,4))
+#temporary2<-data.frame(n.pred=row.names(temporary), temporary)
+
+#r2.max=adjr2.max=c()
+#	for(i in 1:ncol(dat.train24)-1){
+#		r2.max<-c(r2.max,max(temporary[row.names(temporary)==i,"r2"]))
+#		adjr2.max<-c(adjr2.max,max(temporary[row.names(temporary)==i,"adjr2"]))
+#	}
+	
+#	plot(x=1:ncol(dat.train24)-1,y=r2.max, ylab="R2 (black), adjusted R2 (red)", xlab="# of predictors")
+#	points(x=1:ncol(dat.train24)-1,y=adjr2.max, col="red")
+#	abline(h=max(r2.max), lty=2)
+#	abline(h=max(adjr2.max), lty=2, col="red")
+	
+	##r2.max
+	##adjr2.max
+
+# how well did the models do?
+
+#	forward.stepwise <- predict.lm(ans.forward, newdata=dat.test[,1:ncol(dat.train24)-1])
+#	mse.forward.stepwise <- mean((forward.stepwise - dat.test$Question)^2)
+
+#	backward <- predict.lm(ans.backward, newdata=dat.test[,1:ncol(dat.train24)-1])
+#	mse.backward <- mean((backward - dat.test$Question)^2)
+	
+#	mse.best.subsets <- NULL
+#for(i in 1:ncol(dat.train24)-1){
+#	temporary.best<-temporary2[temporary2$n.pred==i & temporary2$r2==r2.max[i],"id"]
+#	mod.best<- lm(Question ~ ., #data=dat.train[,c(c(1:ncol(dat.train24)-1)*ans$which[temporary.best,],col(dat.train24)#)])
+
+#	test.fitted <- predict.lm(mod.best, newdata=dat.test[,1:ncol(dat.train24)-1])
+#	mse.best.subsets <-  c(mse.best.subsets,mean((test.fitted - dat.test$Question)^2))
+#}##end subset loop
+
+
+#	cbind(1:ncol(dat.train24)-1, mse.best.subsets)
+#	mse.forward.stepwise 
+#	mse.backward 
+
+```
