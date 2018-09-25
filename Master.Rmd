@@ -1116,6 +1116,7 @@ Model_test=function(data_in, model)
 Models Training and Test Comparisons (Stepwise)
 ############################################################################################################
 ```{r}
+library(ggplot2)
 train_samples=list(dat_samp_train_1, 
                    dat_samp_train_2, 
                    dat_samp_train_3, 
@@ -1277,6 +1278,16 @@ stepwise_avgs$Setback=as.factor(stepwise_avgs$Setback)
 stepwise_avgs$Test=as.factor(stepwise_avgs$Test)
 p <- ggplot(data = stepwise_avgs, aes(x = index, y=Prediction, group=Setback))
 p + geom_point(aes(color=Setback, shape=Test, size=1.5)) + geom_line()
+
+
+Avg_Avg=read.csv('Avg_Avg.csv')
+
+q <- ggplot(data = Avg_Avg, aes(x = Hours, y=Averages, group=Group))
+q + geom_point() + geom_line()
+
+m <- ggplot(data = Avg_Avg, aes(x = Hours, y=Percent.Change, group=Group, color=Group))
+m + geom_point() + geom_line()
+
 ```
 ############################################################################################################
 
