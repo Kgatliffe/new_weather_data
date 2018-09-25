@@ -115,7 +115,6 @@ rm(hour_Den)
 <!-- rm(hour_CB) -->
 <!-- ``` -->
 
-Create -1H, -3H, -6H, -12H, -24H Time indicator columns for Denver data
 ```{r include=FALSE}
 Denver$ind_1=NA
 Denver$ind_3=NA
@@ -164,7 +163,54 @@ for(i in 25:35888)
     else
     {Denver$ind_24[i]=0}
 }
+
+t=which(Denver$temp==-273.15)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$temp[s]<-(Denver$temp[s+1]+(Denver$temp[s-1]-Denver$temp[s+1])/2)
+}
+
+t=which(Denver$temp_max==-273.15)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$temp_max[s]<-(Denver$temp_max[s+1]+(Denver$temp_max[s-1]-Denver$temp_max[s+1])/2)
+}
+
+t=which(Denver$temp_min==-273.15)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$temp_min[s]<-(Denver$temp_min[s+1]+(Denver$temp_min[s-1]-Denver$temp_min[s+1])/2)
+}
+
+t=which(Denver$humidity==0)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$humidity[s]<-(Denver$humidity[s+1]+(Denver$humidity[s-1]-Denver$humidity[s+1])/2)
+}
+
+t=which(Denver$humidity==0)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$humidity[s]<-(Denver$humidity[s+1]+(Denver$humidity[s-1]-Denver$humidity[s+1])/2)
+}
+
+t=which(Denver$pressure==0)
+for (i in 1:length(t))
+{
+s<-t[i]
+    Denver$pressure[s]<-(Denver$pressure[s+1]+(Denver$pressure[s-1]-Denver$pressure[s+1])/2)
+}
+
+summary(Denver)
+summary(t)
+
 ```
+Create -1H, -3H, -6H, -12H, -24H Time indicator columns for Denver data
 
 Create New -1H-Denver Data Set
 ```{r}
@@ -425,6 +471,57 @@ Denver_3h=data.frame(dt_3h_Den,
                      weather_description_3h_Den, 
                      weather_icon_3h_Den)
 save(Denver_3h, file = 'Denver_3h.rda')
+
+#Needs to be in Cleaning
+#Uses Denver
+# Interpolate Missing and Impossible Values
+
+t=which(Denver$temp==-273.15)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$temp[s]<-(Denver$temp[s+1]+(Denver$temp[s-1]-Denver$temp[s+1])/2)
+}
+
+t=which(Denver$temp_max==-273.15)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$temp_max[s]<-(Denver$temp_max[s+1]+(Denver$temp_max[s-1]-Denver$temp_max[s+1])/2)
+}
+
+t=which(Denver$temp_min==-273.15)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$temp_min[s]<-(Denver$temp_min[s+1]+(Denver$temp_min[s-1]-Denver$temp_min[s+1])/2)
+}
+
+t=which(Denver$humidity==0)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$humidity[s]<-(Denver$humidity[s+1]+(Denver$humidity[s-1]-Denver$humidity[s+1])/2)
+}
+
+t=which(Denver$humidity==0)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$humidity[s]<-(Denver$humidity[s+1]+(Denver$humidity[s-1]-Denver$humidity[s+1])/2)
+}
+
+t=which(Denver$pressure==0)
+for (i in 1:length(t))
+{
+  s<-t[i]
+  Denver$pressure[s]<-(Denver$pressure[s+1]+(Denver$pressure[s-1]-Denver$pressure[s+1])/2)
+}
+
+summary(Denver)
+summary(t)
+
+
 ```
 
 
