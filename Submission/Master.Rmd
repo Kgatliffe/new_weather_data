@@ -1,0 +1,1312 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+############################################################################################################
+Weather Data By: Kathleen Gatliffe, Leo Dingxuan, Lee Panter
+############################################################################################################
+NOTE MASTER'S INPUT DEPENDENCIES ARE: 
+--directory:/Users/lee/Documents/GitHub/new_weather_data  
+
+or exclude chunk #2 and import the following information:
+--DenverK.rda
+packages: dplyr, lubridate, tidyverse, caTools
+
+for more information link to:
+https://github.com/Kgatliffe/new_weather_data
+############################################################################################################
+
+############################################################################################################
+############################################################################################################
+##  Preamble
+############################################################################################################
+############################################################################################################
+
+############################################################################################################
+Options and Packages
+############################################################################################################
+## 
+Markdown Options
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = FALSE)
+```
+##
+Clear working environment, Set Working Directory to Variable WD
+```{r include=FALSE}
+rm(list=ls())
+WD="/Users/lee/Documents/GitHub/new_weather_data"
+setwd(WD)
+rm(WD)
+```
+##
+Install Packages (checking for installation)
+```{r eval=FALSE, include=FALSE}
+install.packages("dplyr")
+install.packages("lubridate")
+install.packages("tidyverse")
+install.packages("MASS")
+```
+##
+Load Packages
+```{r eval= FALSE, include=FALSE}
+library(dplyr)
+library(lubridate)
+#library(tidyverse)
+require(caTools)
+library(MASS)
+```
+############################################################################################################
+
+
+############################################################################################################
+Load Data, Assign Column Names and Create Time-"Lubridate" Variables
+##
+Load Data files to denver
+```{r include=FALSE}
+load("DenverK.rda")
+```
+############################################################################################################
+
+
+
+############################################################################################################
+############################################################################################################
+## Data Cleaning and Variable Cration
+############################################################################################################
+############################################################################################################
+
+############################################################################################################
+Create Time-Formatting variable data for Denver data
+##
+```{r include=FALSE}
+library(lubridate)
+dt_iso_col_denver=Denver$dt_iso
+year_Den=year(dt_iso_col_denver)
+month_Den=month(dt_iso_col_denver)
+day_Den=day(dt_iso_col_denver)
+hour_Den=hour(dt_iso_col_denver)
+Denver$Year=NA
+Denver$Year=year_Den
+Denver$Month=NA
+Denver$Month=month_Den
+Denver$Day=NA
+Denver$Day=day_Den
+Denver$Hour=NA
+Denver$Hour=hour_Den
+rm(dt_iso_col_denver)
+rm(year_Den)
+rm(month_Den)
+rm(day_Den)
+rm(hour_Den)
+```
+############################################################################################################
+
+############################################################################################################
+Create Time-offset data
+## 
+Create -1H, -3H, -6H, -12H, -24H Time indicator columns for Denver data
+```{r}
+Denver$ind_1=NA
+Denver$ind_3=NA
+Denver$ind_6=NA
+Denver$ind_12=NA
+Denver$ind_24=NA
+
+
+for (i in 2:35888)
+{ 
+    if((Denver$Hour[i-1]+1==Denver$Hour[i]) | (Denver$Hour[i-1]==23 & Denver$Hour[i]==0))
+    {Denver$ind_1[i]<-1}
+    else
+    {Denver$ind_1[i]<-0}
+}
+
+
+for(i in 5:35888)
+{
+  if(Denver$ind_1[i-3]==1)
+    {Denver$ind_3[i]=3}
+  else
+    {Denver$ind_3[i]=0}
+}
+
+
+for(i in 8:35888)
+{
+  if(Denver$ind_1[i-6]==1)
+    {Denver$ind_6[i]=6}
+  else
+    {Denver$ind_6[i]=0}
+}
+
+for(i in 14:35888)
+{
+    if(Denver$ind_1[i-12]==1)
+      {Denver$ind_12[i]=12}
+    else
+      {Denver$ind_12[i]=0}
+}
+
+for(i in 26:35888)
+{
+  if(Denver$ind_1[i-24]==1)
+    {Denver$ind_24[i]=24}
+  else
+    {Denver$ind_24[i]=0}
+}
+rm(i)
+```
+##  
+Create New -1H-Denver Data Set
+```{r include=FALSE}
+dt_1h_Den=c()         
+temp_1h_Den=c()              
+temp_min_1h_Den=c()     
+temp_max_1h_Den=c()        
+pressure_1h_Den=c()           
+humidity_1h_Den=c()           
+wind_speed_1h_Den=c()      
+wind_deg_1h_Den=c()          
+rain_1h_1h_Den=c()            
+rain_3h_1h_Den=c()           
+snow_1h_1h_Den=c()            
+snow_3h_1h_Den=c()            
+clouds_all_1h_Den=c()          
+weather_id_1h_Den=c()         
+weather_main_1h_Den=c()      
+weather_description_1h_Den=c() 
+
+for(i in 2:35888)
+{ 
+  if (Denver$ind_1[i]==1)
+  {
+    dt_1h_Den[i]=Denver$dt[i-1]         
+    temp_1h_Den[i]=Denver$temp[i-1]              
+    temp_min_1h_Den[i]=Denver$temp_min[i-1]     
+    temp_max_1h_Den[i]=Denver$temp_max[i-1]        
+    pressure_1h_Den[i]=Denver$pressure[i-1]           
+    humidity_1h_Den[i]=Denver$humidity[i-1]           
+    wind_speed_1h_Den[i]=Denver$wind_speed[i-1]      
+    wind_deg_1h_Den[i]=Denver$wind_deg[i-1]          
+    rain_1h_1h_Den[i]=Denver$rain_1h[i-1]            
+    rain_3h_1h_Den[i]=Denver$rain_3h[i-1]           
+    snow_1h_1h_Den[i]=Denver$snow_1h[i-1]            
+    snow_3h_1h_Den[i]=Denver$snow_3h[i-1]            
+    clouds_all_1h_Den[i]=Denver$clouds_all[i-1]          
+    weather_id_1h_Den[i]=Denver$weather_id[i-1]         
+    weather_main_1h_Den[i]=Denver$weather_main[i-1]      
+    weather_description_1h_Den[i]=Denver$weather_description[i-1] 
+  }
+}
+
+Denver_1h=data.frame(dt_1h_Den,         
+                     temp_1h_Den,              
+                     temp_min_1h_Den,     
+                     temp_max_1h_Den,        
+                     pressure_1h_Den,         
+                     humidity_1h_Den,           
+                     wind_speed_1h_Den,      
+                     wind_deg_1h_Den,          
+                     rain_1h_1h_Den,            
+                     rain_3h_1h_Den,           
+                     snow_1h_1h_Den,            
+                     snow_3h_1h_Den,            
+                     clouds_all_1h_Den,          
+                     weather_id_1h_Den,         
+                     weather_main_1h_Den,      
+                     weather_description_1h_Den) 
+save(Denver_1h, file = 'Denver_1h.rda')
+```
+##  
+Create New -3H-Denver Data Set
+```{r include=FALSE}
+dt_3h_Den=c()         
+temp_3h_Den=c()              
+temp_min_3h_Den=c()     
+temp_max_3h_Den=c()        
+pressure_3h_Den=c()           
+humidity_3h_Den=c()           
+wind_speed_3h_Den=c()      
+wind_deg_3h_Den=c()          
+rain_1h_3h_Den=c()            
+rain_3h_3h_Den=c()           
+snow_1h_3h_Den=c()            
+snow_3h_3h_Den=c()            
+clouds_all_3h_Den=c()          
+weather_id_3h_Den=c()         
+weather_main_3h_Den=c()      
+weather_description_3h_Den=c() 
+
+dt_3h_Den[1:35888]=NA         
+temp_3h_Den[1:35888]=NA              
+temp_min_3h_Den[1:35888]=NA     
+temp_max_3h_Den[1:35888]=NA        
+pressure_3h_Den[1:35888]=NA           
+humidity_3h_Den[1:35888]=NA           
+wind_speed_3h_Den[1:35888]=NA      
+wind_deg_3h_Den[1:35888]=NA          
+rain_1h_3h_Den[1:35888]=NA            
+rain_3h_3h_Den[1:35888]=NA           
+snow_1h_3h_Den[1:35888]=NA            
+snow_3h_3h_Den[1:35888]=NA            
+clouds_all_3h_Den[1:35888]=NA          
+weather_id_3h_Den[1:35888]=NA         
+weather_main_3h_Den[1:35888]=NA      
+weather_description_3h_Den[1:35888]=NA 
+
+
+for(i in 5:35888)
+{ 
+  if (Denver$ind_3[i]==3)
+  {
+    dt_3h_Den[i]=Denver$dt[i-3]         
+    temp_3h_Den[i]=Denver$temp[i-3]              
+    temp_min_3h_Den[i]=Denver$temp_min[i-3]     
+    temp_max_3h_Den[i]=Denver$temp_max[i-3]        
+    pressure_3h_Den[i]=Denver$pressure[i-3]           
+    humidity_3h_Den[i]=Denver$humidity[i-3]           
+    wind_speed_3h_Den[i]=Denver$wind_speed[i-3]      
+    wind_deg_3h_Den[i]=Denver$wind_deg[i-3]          
+    rain_1h_3h_Den[i]=Denver$rain_1h[i-3]            
+    rain_3h_3h_Den[i]=Denver$rain_3h[i-3]           
+    snow_1h_3h_Den[i]=Denver$snow_1h[i-3]            
+    snow_3h_3h_Den[i]=Denver$snow_3h[i-3]            
+    clouds_all_3h_Den[i]=Denver$clouds_all[i-3]          
+    weather_id_3h_Den[i]=Denver$weather_id[i-3]         
+    weather_main_3h_Den[i]=Denver$weather_main[i-3]      
+    weather_description_3h_Den[i]=Denver$weather_description[i-3] 
+  }
+}
+
+Denver_3h=data.frame(dt_3h_Den,         
+                     temp_3h_Den,              
+                     temp_min_3h_Den,     
+                     temp_max_3h_Den,        
+                     pressure_3h_Den,         
+                     humidity_3h_Den,           
+                     wind_speed_3h_Den,      
+                     wind_deg_3h_Den,          
+                     rain_1h_3h_Den,            
+                     rain_3h_3h_Den,           
+                     snow_1h_3h_Den,            
+                     snow_3h_3h_Den,            
+                     clouds_all_3h_Den,          
+                     weather_id_3h_Den,         
+                     weather_main_3h_Den,      
+                     weather_description_3h_Den) 
+save(Denver_3h, file = 'Denver_3h.rda')
+```
+##  
+Create New -6H-Denver Data Set
+```{r include=FALSE}
+dt_6h_Den=c()         
+temp_6h_Den=c()              
+temp_min_6h_Den=c()     
+temp_max_6h_Den=c()        
+pressure_6h_Den=c()           
+humidity_6h_Den=c()           
+wind_speed_6h_Den=c()      
+wind_deg_6h_Den=c()          
+rain_1h_6h_Den=c()            
+rain_3h_6h_Den=c()           
+snow_1h_6h_Den=c()            
+snow_3h_6h_Den=c()            
+clouds_all_6h_Den=c()          
+weather_id_6h_Den=c()         
+weather_main_6h_Den=c()      
+weather_description_6h_Den=c() 
+
+dt_6h_Den[1:35888]=NA         
+temp_6h_Den[1:35888]=NA              
+temp_min_6h_Den[1:35888]=NA     
+temp_max_6h_Den[1:35888]=NA        
+pressure_6h_Den[1:35888]=NA           
+humidity_6h_Den[1:35888]=NA           
+wind_speed_6h_Den[1:35888]=NA      
+wind_deg_6h_Den[1:35888]=NA          
+rain_1h_6h_Den[1:35888]=NA            
+rain_3h_6h_Den[1:35888]=NA           
+snow_1h_6h_Den[1:35888]=NA            
+snow_3h_6h_Den[1:35888]=NA            
+clouds_all_6h_Den[1:35888]=NA          
+weather_id_6h_Den[1:35888]=NA         
+weather_main_6h_Den[1:35888]=NA      
+weather_description_6h_Den[1:35888]=NA 
+
+
+for(i in 8:35888)
+{ 
+  if (Denver$ind_6[i]==6)
+  {
+    dt_6h_Den[i]=Denver$dt[i-6]         
+    temp_6h_Den[i]=Denver$temp[i-6]              
+    temp_min_6h_Den[i]=Denver$temp_min[i-6]     
+    temp_max_6h_Den[i]=Denver$temp_max[i-6]        
+    pressure_6h_Den[i]=Denver$pressure[i-6]           
+    humidity_6h_Den[i]=Denver$humidity[i-6]           
+    wind_speed_6h_Den[i]=Denver$wind_speed[i-6]      
+    wind_deg_6h_Den[i]=Denver$wind_deg[i-6]          
+    rain_1h_6h_Den[i]=Denver$rain_1h[i-6]            
+    rain_3h_6h_Den[i]=Denver$rain_3h[i-6]           
+    snow_1h_6h_Den[i]=Denver$snow_1h[i-6]            
+    snow_3h_6h_Den[i]=Denver$snow_3h[i-6]            
+    clouds_all_6h_Den[i]=Denver$clouds_all[i-6]          
+    weather_id_6h_Den[i]=Denver$weather_id[i-6]         
+    weather_main_6h_Den[i]=Denver$weather_main[i-6]      
+    weather_description_6h_Den[i]=Denver$weather_description[i-6] 
+  }
+}
+
+Denver_6h=data.frame(dt_6h_Den,
+                     temp_6h_Den,
+                     temp_min_6h_Den,     
+                     temp_max_6h_Den,
+                     pressure_6h_Den,         
+                     humidity_6h_Den,           
+                     wind_speed_6h_Den,      
+                     wind_deg_6h_Den,          
+                     rain_1h_6h_Den,            
+                     rain_3h_6h_Den,           
+                     snow_1h_6h_Den,            
+                     snow_3h_6h_Den,            
+                     clouds_all_6h_Den,          
+                     weather_id_6h_Den,         
+                     weather_main_6h_Den,      
+                     weather_description_6h_Den) 
+save(Denver_6h, file = 'Denver_6h.rda')
+```
+##  
+Create New -12H-Denver Data Set
+```{r include=FALSE}
+dt_12h_Den=c()         
+temp_12h_Den=c()              
+temp_min_12h_Den=c()     
+temp_max_12h_Den=c()        
+pressure_12h_Den=c()           
+humidity_12h_Den=c()           
+wind_speed_12h_Den=c()      
+wind_deg_12h_Den=c()          
+rain_1h_12h_Den=c()            
+rain_3h_12h_Den=c()           
+snow_1h_12h_Den=c()            
+snow_3h_12h_Den=c()            
+clouds_all_12h_Den=c()          
+weather_id_12h_Den=c()         
+weather_main_12h_Den=c()      
+weather_description_12h_Den=c() 
+
+dt_12h_Den[1:35888]=NA         
+temp_12h_Den[1:35888]=NA              
+temp_min_12h_Den[1:35888]=NA     
+temp_max_12h_Den[1:35888]=NA        
+pressure_12h_Den[1:35888]=NA           
+humidity_12h_Den[1:35888]=NA           
+wind_speed_12h_Den[1:35888]=NA      
+wind_deg_12h_Den[1:35888]=NA          
+rain_1h_12h_Den[1:35888]=NA            
+rain_3h_12h_Den[1:35888]=NA           
+snow_1h_12h_Den[1:35888]=NA            
+snow_3h_12h_Den[1:35888]=NA            
+clouds_all_12h_Den[1:35888]=NA          
+weather_id_12h_Den[1:35888]=NA         
+weather_main_12h_Den[1:35888]=NA      
+weather_description_12h_Den[1:35888]=NA 
+
+
+for(i in 14:35888)
+{ 
+  if (Denver$ind_12[i]==12)
+  {
+    dt_12h_Den[i]=Denver$dt[i-12]         
+    temp_12h_Den[i]=Denver$temp[i-12]              
+    temp_min_12h_Den[i]=Denver$temp_min[i-12]     
+    temp_max_12h_Den[i]=Denver$temp_max[i-12]        
+    pressure_12h_Den[i]=Denver$pressure[i-12]           
+    humidity_12h_Den[i]=Denver$humidity[i-12]           
+    wind_speed_12h_Den[i]=Denver$wind_speed[i-12]      
+    wind_deg_12h_Den[i]=Denver$wind_deg[i-12]          
+    rain_1h_12h_Den[i]=Denver$rain_1h[i-12]            
+    rain_3h_12h_Den[i]=Denver$rain_3h[i-12]           
+    snow_1h_12h_Den[i]=Denver$snow_1h[i-12]            
+    snow_3h_12h_Den[i]=Denver$snow_3h[i-12]            
+    clouds_all_12h_Den[i]=Denver$clouds_all[i-12]          
+    weather_id_12h_Den[i]=Denver$weather_id[i-12]         
+    weather_main_12h_Den[i]=Denver$weather_main[i-12]      
+    weather_description_12h_Den[i]=Denver$weather_description[i-12] 
+  }
+}
+
+
+Denver_12h=data.frame(dt_12h_Den,
+                     temp_12h_Den,
+                     temp_min_12h_Den,     
+                     temp_max_12h_Den,
+                     pressure_12h_Den,         
+                     humidity_12h_Den,           
+                     wind_speed_12h_Den,      
+                     wind_deg_12h_Den,          
+                     rain_1h_12h_Den,            
+                     rain_3h_12h_Den,           
+                     snow_1h_12h_Den,            
+                     snow_3h_12h_Den,            
+                     clouds_all_12h_Den,          
+                     weather_id_12h_Den,         
+                     weather_main_12h_Den,      
+                     weather_description_12h_Den) 
+save(Denver_12h, file = 'Denver_12h.rda')
+```
+##  
+Create New -24H-Denver Data Set
+```{r include=FALSE}
+dt_24h_Den=c()         
+temp_24h_Den=c()              
+temp_min_24h_Den=c()     
+temp_max_24h_Den=c()        
+pressure_24h_Den=c()           
+humidity_24h_Den=c()           
+wind_speed_24h_Den=c()      
+wind_deg_24h_Den=c()          
+rain_1h_24h_Den=c()            
+rain_3h_24h_Den=c()           
+snow_1h_24h_Den=c()            
+snow_3h_24h_Den=c()            
+clouds_all_24h_Den=c()          
+weather_id_24h_Den=c()         
+weather_main_24h_Den=c()      
+weather_description_24h_Den=c() 
+
+dt_24h_Den[1:35888]=NA         
+temp_24h_Den[1:35888]=NA              
+temp_min_24h_Den[1:35888]=NA     
+temp_max_24h_Den[1:35888]=NA        
+pressure_24h_Den[1:35888]=NA           
+humidity_24h_Den[1:35888]=NA           
+wind_speed_24h_Den[1:35888]=NA      
+wind_deg_24h_Den[1:35888]=NA          
+rain_1h_24h_Den[1:35888]=NA            
+rain_3h_24h_Den[1:35888]=NA           
+snow_1h_24h_Den[1:35888]=NA            
+snow_3h_24h_Den[1:35888]=NA            
+clouds_all_24h_Den[1:35888]=NA          
+weather_id_24h_Den[1:35888]=NA         
+weather_main_24h_Den[1:35888]=NA      
+weather_description_24h_Den[1:35888]=NA 
+
+for(i in 26:35888)
+{ 
+  if (Denver$ind_24[i]==24)
+  {
+    dt_24h_Den[i]=Denver$dt[i-24]         
+    temp_24h_Den[i]=Denver$temp[i-24]              
+    temp_min_24h_Den[i]=Denver$temp_min[i-24]     
+    temp_max_24h_Den[i]=Denver$temp_max[i-24]        
+    pressure_24h_Den[i]=Denver$pressure[i-24]           
+    humidity_24h_Den[i]=Denver$humidity[i-24]           
+    wind_speed_24h_Den[i]=Denver$wind_speed[i-24]      
+    wind_deg_24h_Den[i]=Denver$wind_deg[i-24]          
+    rain_1h_24h_Den[i]=Denver$rain_1h[i-24]            
+    rain_3h_24h_Den[i]=Denver$rain_3h[i-24]           
+    snow_1h_24h_Den[i]=Denver$snow_1h[i-24]            
+    snow_3h_24h_Den[i]=Denver$snow_3h[i-24]            
+    clouds_all_24h_Den[i]=Denver$clouds_all[i-24]          
+    weather_id_24h_Den[i]=Denver$weather_id[i-24]         
+    weather_main_24h_Den[i]=Denver$weather_main[i-24]      
+    weather_description_24h_Den[i]=Denver$weather_description[i-24] 
+  }
+}
+
+
+Denver_24h=data.frame(dt_24h_Den,
+                     temp_24h_Den,
+                     temp_min_24h_Den,     
+                     temp_max_24h_Den,
+                     pressure_24h_Den,         
+                     humidity_24h_Den,           
+                     wind_speed_24h_Den,      
+                     wind_deg_24h_Den,          
+                     rain_1h_24h_Den,            
+                     rain_3h_24h_Den,           
+                     snow_1h_24h_Den,            
+                     snow_3h_24h_Den,            
+                     clouds_all_24h_Den,          
+                     weather_id_24h_Den,         
+                     weather_main_24h_Den,      
+                     weather_description_24h_Den) 
+save(Denver_24h, file = 'Denver_24h.rda')
+```
+############################################################################################################
+
+############################################################################################################
+New Data Frame, re-import Data
+##  
+Create Final Data frame
+```{r include=FALSE}
+as.matrix(Denver)
+as.matrix(Denver_1h)
+as.matrix(Denver_3h)
+as.matrix(Denver_6h)
+as.matrix(Denver_12h)
+as.matrix(Denver_24h)
+
+Mat_Dat=cbind(Denver,Denver_1h,Denver_3h,Denver_6h,Denver_12h,Denver_24h)
+FinalDat=data.frame(Mat_Dat)
+
+save(FinalDat, file = 'FinalDat.rda')
+
+Denver=data.frame(Denver)
+Denver_1h=data.frame(Denver_1h)
+Denver_3h=data.frame(Denver_3h)
+Denver_6h=data.frame(Denver_6h)
+Denver_12h=data.frame(Denver_12h)
+Denver_24h=data.frame(Denver_24h)
+```
+## 
+Clean up Work Space, re-import data sets
+```{r include=FALSE}
+rm(list=ls())
+load("FinalDat.rda")
+```
+############################################################################################################
+
+############################################################################################################
+Calculate indicator response variable
+## 
+```{r include=FALSE}
+descr_ind=c()
+descr_ind[1:35888]=NA
+
+prev_sum=c()
+prev_sum[1:35888]=NA
+
+resp_ind=c()
+resp_ind[1:35888]=NA
+
+for(i in 1:35888)
+{
+  if((FinalDat$weather_main[i]=="Drizzle")|(FinalDat$weather_main[i]=="Fog")|(FinalDat$weather_main[i]=="Mist")|
+     (FinalDat$weather_main[i]=="Rain")|(FinalDat$weather_main[i]=="Snow")|(FinalDat$weather_main[i]=="Squall")|
+     (FinalDat$weather_main[i]=="Thunderstorm"))
+    {descr_ind[i]=1}
+  else
+    {descr_ind[i]=0} 
+}
+
+for(i in 1:35863)
+{
+  prev_sum[i]=sum(descr_ind[(i+1):(i+24)])
+}
+
+for(i in 1:34864)
+{
+  if(prev_sum[i]>0)
+  {
+    resp_ind[i]=1
+  }
+  else
+  {resp_ind[i]=0}
+}
+
+FinalDat$Question=resp_ind
+
+save(FinalDat, file = 'FinalDat.rda')
+rm(resp_ind)
+rm(prev_sum)
+rm(descr_ind)
+rm(i)
+```
+############################################################################################################
+
+############################################################################################################
+Translate Weather-Main Variables
+## 
+```{r include = FALSE}
+weather_main_new = c()
+weather_main_factor=as.factor(FinalDat$weather_main)
+weather_main_new[1:35888] = NA
+
+for (i in 1:35888)
+{
+  if ((FinalDat$weather_main[i] == 'Drizzle') |
+      (FinalDat$weather_main[i] == 'Fog') |
+      (FinalDat$weather_main[i] == 'Mist') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Rain') |
+      (FinalDat$weather_main[i] == 'Snow') |
+      (FinalDat$weather_main[i] == 'Squall') |
+      (FinalDat$weather_main[i] == 'Thunderstorm'))
+  {weather_main_new[i] <- 1}
+  
+      else
+    {
+      weather_main_new[i] <- 0
+    }
+}
+
+#creating weather main indicator
+FinalDat$weather_main_1h_Den_Dummy <- ifelse(FinalDat$weather_main_1h_Den==3 | FinalDat$weather_main_1h_Den==5 |FinalDat$weather_main_1h_Den== 7 | FinalDat$weather_main_1h_Den==8 | FinalDat$weather_main_1h_Den== 10 |FinalDat$weather_main_1h_Den== 11| FinalDat$weather_main_1h_Den==12, 1, 0)
+FinalDat$weather_main_3h_Den_Dummy <- ifelse(FinalDat$weather_main_3h_Den==3 | FinalDat$weather_main_3h_Den==5 |FinalDat$weather_main_3h_Den== 7 | FinalDat$weather_main_3h_Den==8 | FinalDat$weather_main_3h_Den== 10 |FinalDat$weather_main_3h_Den== 11| FinalDat$weather_main_3h_Den==12, 1, 0)
+FinalDat$weather_main_6h_Den_Dummy <- ifelse(FinalDat$weather_main_6h_Den==3 | FinalDat$weather_main_6h_Den==5 |FinalDat$weather_main_6h_Den== 7 | FinalDat$weather_main_6h_Den==8 | FinalDat$weather_main_6h_Den== 10 |FinalDat$weather_main_6h_Den== 11| FinalDat$weather_main_6h_Den==12, 1, 0)
+FinalDat$weather_main_12h_Den_Dummy <- ifelse(FinalDat$weather_main_12h_Den==3 | FinalDat$weather_main_12h_Den==5 |FinalDat$weather_main_12h_Den== 7 | FinalDat$weather_main_12h_Den==8 | FinalDat$weather_main_12h_Den== 10 |FinalDat$weather_main_12h_Den== 11| FinalDat$weather_main_12h_Den==12, 1, 0)
+FinalDat$weather_main_24h_Den_Dummy <- ifelse(FinalDat$weather_main_24h_Den==3 | FinalDat$weather_main_24h_Den==5 |FinalDat$weather_main_24h_Den== 7 | FinalDat$weather_main_24h_Den==8 | FinalDat$weather_main_24h_Den== 10 |FinalDat$weather_main_24h_Den== 11| FinalDat$weather_main_24h_Den==12, 1, 0)
+save(FinalDat, file = 'FinalDat.rda')
+rm(weather_main_factor)
+rm(weather_main_new)
+rm(i)
+```
+############################################################################################################
+
+############################################################################################################
+Convert Angle Measurements to 
+## 
+```{r include=FALSE}
+## create wind direction variable
+directions <-c("N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","SN")
+deg <- c(0,11.25,33.75,56.25,78.75,101.25,123.75,146.25,168.75,191.25,213.75,236.25,258.75,281.25,303.75,326.25,348.75,360)
+FinalDat$wind_dir <- cut(FinalDat$wind_deg, deg, labels = directions,right = FALSE)
+FinalDat$wind_dir_1h_Den <- cut(FinalDat$wind_deg_1h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_3h_Den <- cut(FinalDat$wind_deg_3h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_6h_Den <- cut(FinalDat$wind_deg_6h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_12h_Den <- cut(FinalDat$wind_deg_12h_Den, deg, labels = directions, right = FALSE)
+FinalDat$wind_dir_24h_Den <- cut(FinalDat$wind_deg_24h_Den, deg, labels = directions, right = FALSE)
+
+#change the label SN to N
+FinalDat$wind_dir[FinalDat$wind_dir=="SN"] <- c("N")
+FinalDat$wind_dir_1h_Den[FinalDat$wind_dir_1h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_3h_Den[FinalDat$wind_dir_3h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_6h_Den[FinalDat$wind_dir_6h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_12h_Den[FinalDat$wind_dir_12h_Den=="SN"] <- c("N")
+FinalDat$wind_dir_24h_Den[FinalDat$wind_dir_24h_Den=="SN"] <- c("N")
+
+save(FinalDat, file = 'FinalDat.rda')
+
+rm(deg)
+rm(directions)
+```
+############################################################################################################
+
+############################################################################################################
+Kill unused columns and Rows with NAs
+## 
+```{r include=FALSE}
+FinalDat2 = FinalDat[, -c(2,9,16,17,22,23,24,25,26,27,34,41,42,43,50,57,58,59,66,73,74,75,82,89,90,91,
+                          98,105,106,113,114,115,116,117,118)]
+FinalDat2 = FinalDat2[complete.cases(FinalDat2), ]
+save(FinalDat2, file = 'FinalDat2.rda')
+```
+############################################################################################################
+
+
+
+############################################################################################################
+############################################################################################################
+## MODEL SELECTION
+############################################################################################################
+############################################################################################################
+```{r}
+load(file = 'FinalDat2.rda')
+require(caTools)
+dat<-FinalDat2
+dat<-FinalDat2[-c(1,14,90:95)]
+set.seed(101) 
+dat_sample<-dat[sample(nrow(dat), 3000), ]
+sample = sample.split(dat_sample$pressure, SplitRatio = .75)
+trainset = subset(dat_sample, sample == TRUE)
+testset  = subset(dat_sample, sample == FALSE)
+
+mean_train<-apply(trainset, 2, mean)
+var_train<-apply(trainset, 2, var)
+
+train <- t((t(trainset)-mean_train)/sqrt(var_train))
+apply(train, 2, mean)
+apply(train, 2, var)
+
+dat.train<-data.frame(train, Question=trainset$Question)
+
+##	NEED TO APPLY TRAINING MEAN AND STDEV TO STANDARDIZE TEST SET!!  ##
+test<-as.data.frame(t((t(testset)-mean_train)/sqrt(var_train)))
+dat.test <- data.frame(test, Question=testset$Question)
+apply(test, 2, mean)
+apply(test, 2, var)
+
+
+
+dat.train24x <- names(dat.train) %in% c("temp_24h_Den","pressure_24h_Den",
+"humidity_24h_Den","wind_speed_24h_Den","clouds_all_24h_Den","weather_main_24h_Den_Dummy","Question.1")
+dat.train24<-dat.train[dat.train24x]
+
+dat.test24x <- names(dat.test) %in% c("temp_24h_Den","pressure_24h_Den",
+"humidity_24h_Den","wind_speed_24h_Den","clouds_all_24h_Den","weather_main_24h_Den_Dummy","Question.1") 
+dat.test24<-dat.test[dat.test24x]
+
+dat.train12x <- names(dat.train) %in% c("temp_12h_Den","pressure_12h_Den",
+"humidity_12h_Den","wind_speed_12h_Den","clouds_all_12h_Den",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure1224","humidity1224",
+"temp1224","wind_speed1224","clouds_all1224","Question.1")
+dat.train12<-dat.train[dat.train12x]
+
+dat.test12x <- names(dat.test) %in% c("temp_12h_Den","pressure_12h_Den",
+"humidity_12h_Den","wind_speed_12h_Den","clouds_all_12h_Den",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure1224","humidity1224",
+"temp1224","wind_speed1224","clouds_all1224","Question.1") 
+dat.test12<-dat.test[dat.test12x]
+
+
+dat.train6x <- names(dat.train) %in% c("temp_6h_Den","pressure_6h_Den","humidity_6h_Den","wind_speed_6h_Den",
+"clouds_all_6h_Den","weather_main_6h_Den_Dummy",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy","pressure624",
+"humidity624","temp624","wind_speed624","clouds_all624","pressure612",
+"humidity612","temp612","wind_speed612","clouds_all612","Question.1") 
+dat.train6<-dat.train[dat.train6x]
+
+dat.test6x <- names(dat.test) %in% c("temp_6h_Den","pressure_6h_Den","humidity_6h_Den","wind_speed_6h_Den",
+"clouds_all_6h_Den","weather_main_6h_Den_Dummy",
+"weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy","pressure624",
+"humidity624","temp624","wind_speed624","clouds_all624","pressure612",
+"humidity612","temp612","wind_speed612","clouds_all612","Question.1") 
+dat.test6<-dat.test[dat.test6x]
+
+dat.train3x <- names(dat.train) %in% c("temp_3h_Den","pressure_3h_Den","humidity_3h_Den",
+"wind_speed_3h_Den","clouds_all_3h_Den","weather_main_3h_Den_Dummy",
+"weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure324","humidity324","temp324","wind_speed324","clouds_all324",
+"pressure312","humidity312","temp312","wind_speed312","clouds_all312",
+"pressure36","humidity36","temp36","wind_speed36","clouds_all36","Question.1") 
+dat.train3<-dat.train[dat.train3x]
+
+dat.test3x <- names(dat.test) %in% 
+  c("temp_3h_Den","pressure_3h_Den","humidity_3h_Den",
+"wind_speed_3h_Den","clouds_all_3h_Den","weather_main_3h_Den_Dummy",
+"weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy","weather_main_24h_Den_Dummy",
+"pressure324","humidity324","temp324","wind_speed324","clouds_all324",
+"pressure312","humidity312","temp312","wind_speed312","clouds_all312",
+"pressure36","humidity36","temp36","wind_speed36","clouds_all36","Question.1") 
+dat.test3<-dat.test[dat.test3x]
+
+dat.train1x <- names(dat.train) %in% c("temp_1h_Den","pressure_1h_Den",
+"humidity_1h_Den","wind_speed_1h_Den","clouds_all_1h_Den","weather_main_1h_Den_Dummy",
+"weather_main_3h_Den_Dummy","weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy",
+"weather_main_24h_Den_Dummy","pressure124","humidity124","temp124","wind_speed124",
+"clouds_all124","pressure112","humidity112","temp112","wind_speed112",
+"clouds_all112","pressure16","humidity16","temp16","wind_speed16",
+"clouds_all16","pressure13","humidity13","temp13","wind_speed13",
+"clouds_all13","Question.1") 
+dat.train1<-dat.train[dat.train1x]
+
+dat.test1x <- names(dat.test) %in% c("temp_1h_Den","pressure_1h_Den",
+"humidity_1h_Den","wind_speed_1h_Den","clouds_all_1h_Den","weather_main_1h_Den_Dummy",
+"weather_main_3h_Den_Dummy","weather_main_6h_Den_Dummy","weather_main_12h_Den_Dummy",
+"weather_main_24h_Den_Dummy","pressure124","humidity124","temp124","wind_speed124",
+"clouds_all124","pressure112","humidity112","temp112","wind_speed112",
+"clouds_all112","pressure16","humidity16","temp16","wind_speed16",
+"clouds_all16","pressure13","humidity13","temp13","wind_speed13",
+"clouds_all13","Question.1") 
+dat.test1<-dat.test[dat.test1x]
+```
+
+```{r}
+
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train24)
+	mod.full <- glm(as.factor(Question.1) ~ .,family=binomial() ,data=dat.train24)
+```
+	
+```{r}
+	# forward selection
+ library(MASS)
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+	
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+
+```{r}
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train12,control = list(maxit = 50))
+	mod.full <- glm(as.factor(Question.1) ~ .,family=binomial() ,data=dat.train12,control = list(maxit = 50))
+```
+	
+```{r}
+	# forward selection
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+	
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+
+```{r}
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train6,control = list(maxit = 100))
+	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train6,control = list(maxit = 1000))
+```
+	
+```{r}
+	# forward selection
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+	
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+
+```{r}
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train3,control = list(maxit = 100))
+	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train3,control = list(maxit = 100))
+
+```
+	
+```{r}
+	# forward selection
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+	
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+
+```{r}
+	mod.int <- glm(as.factor(Question.1) ~ 1, family=binomial(), data=dat.train1,control = list(maxit = 100))
+	mod.full <- glm(as.factor(Question.1) ~.,family=binomial() ,data=dat.train1,control = list(maxit = 100))
+```
+	
+```{r}
+	# forward selection
+	stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+	ans.forward <- stepAIC(mod.int, direction="forward",
+              scope=list(lower=mod.int, upper= mod.full))
+
+	predicted.y <- as.matrix(cbind(rep(1,nrow(dat.test)),dat.test[,names(ans.forward$coefficients)[-1]])) %*% ans.forward$coef
+	pe <- mean( (dat.test$Question - predicted.y)^2 )
+pe
+```
+	
+```{r}
+	# backward selection
+stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+ans.backward <- stepAIC(mod.full,direction="backward",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+	
+```{r eval=FALSE, include=FALSE}
+	# stepwise selection
+stepAIC(mod.int, direction="both",
+             scope=list(lower=mod.int, upper= mod.full))
+```
+############################################################################################################
+############################################################################################################
+
+
+
+############################################################################################################
+############################################################################################################
+MODEL ANALYSIS
+############################################################################################################
+############################################################################################################
+
+############################################################################################################
+Create Random Samples
+############################################################################################################
+```{r include=FALSE}
+load('FinalDat2.rda')
+dat <- FinalDat2
+dat_train=FinalDat2[1:16277,]
+dat_test=FinalDat2[16277:21702,]
+
+
+dat_samp_train_1=data.frame()
+dat_samp_train_2=data.frame()
+dat_samp_train_3=data.frame()
+dat_samp_train_4=data.frame()
+dat_samp_train_5=data.frame()
+dat_samp_train_6=data.frame()
+dat_samp_train_7=data.frame()
+dat_samp_train_8=data.frame()
+dat_samp_train_9=data.frame()
+dat_samp_train_10=data.frame()
+
+dat_samp_test_1=data.frame()
+dat_samp_test_2=data.frame()
+dat_samp_test_3=data.frame()
+dat_samp_test_4=data.frame()
+dat_samp_test_5=data.frame()
+dat_samp_test_6=data.frame()
+dat_samp_test_7=data.frame()
+dat_samp_test_8=data.frame()
+dat_samp_test_9=data.frame()
+dat_samp_test_10=data.frame()
+
+
+#Function Inputs dat_train and outputs dataframe dat_samp_train which is a random sample 
+RSample_train=function(train)
+{
+  samp_train=train[sample(nrow(train), 2250), ]
+  return(samp_train)
+}
+
+
+#Function Inputs dat_test and outputs dataframe dat_samp_test which is a random sample 
+RSample_test=function(test)
+{
+  samp_test=test[sample(nrow(test), 750), ]
+  return(samp_test)
+}
+
+dat_samp_train_1=RSample_train(dat_train)
+dat_samp_train_2=RSample_train(dat_train)
+dat_samp_train_3=RSample_train(dat_train)
+dat_samp_train_4=RSample_train(dat_train)
+dat_samp_train_5=RSample_train(dat_train)
+dat_samp_train_6=RSample_train(dat_train)
+dat_samp_train_7=RSample_train(dat_train)
+dat_samp_train_8=RSample_train(dat_train)
+dat_samp_train_9=RSample_train(dat_train)
+dat_samp_train_10=RSample_train(dat_train)
+
+
+dat_samp_test_1=RSample_test(dat_test)
+dat_samp_test_2=RSample_test(dat_test)
+dat_samp_test_3=RSample_test(dat_test)
+dat_samp_test_4=RSample_test(dat_test)
+dat_samp_test_5=RSample_test(dat_test)
+dat_samp_test_6=RSample_test(dat_test)
+dat_samp_test_7=RSample_test(dat_test)
+dat_samp_test_8=RSample_test(dat_test)
+dat_samp_test_9=RSample_test(dat_test)
+dat_samp_test_10=RSample_test(dat_test)
+```
+############################################################################################################
+
+
+############################################################################################################
+Create Functions For Model Analysis
+############################################################################################################
+```{r}
+#Needed Inputs for a given model:
+#Data Source
+#Model
+
+#Desired Outputs of Function:
+#Average correcly Diagnosed Responses
+#Average Incorrectly Diagnosed Responses
+
+
+#Note: input is the Model under consideration and a training data set 
+#Output: is Averages desired above
+Model_train = function(data_in, model)
+{
+  Q = as.factor(data_in$Question)
+  len = length(Q)
+  glm_probs = predict(model, type = "response")
+  glm_pred = rep(0, len)
+  glm_pred[glm_probs > 0.5] = 1
+  table = table(glm_pred, Q)
+  acc_pred_NO = table[1, 1]
+  acc_pred_YES = table[2, 2]
+  inacc_pred_NO = table[1, 2]
+  inacc_pred_YES = table[2, 1]
+  tot_acc = acc_pred_NO + acc_pred_YES
+  tot_inacc = inacc_pred_NO + inacc_pred_YES
+  tot = table[1, 1] + table[1, 2] + table[2, 1] + table[2, 2]
+  avg_acc_pred = tot_acc / tot
+  avg_inacc_pred = tot_inacc / tot
+  result = c(avg_acc_pred, avg_inacc_pred)
+  return(result)
+}
+
+#Note: input is the Model under consideration and a data set 
+#Output: is Averages desired above
+Model_test=function(data_in, model)
+{
+  Q = as.factor(data_in$Question)
+  len = length(Q)
+  glm_probs = predict(model,data_in, type = "response")
+  glm_pred = rep(0, len)
+  glm_pred[glm_probs > 0.5] = 1
+  table = table(glm_pred, Q)
+  acc_pred_NO = table[1, 1]
+  acc_pred_YES = table[2, 2]
+  inacc_pred_NO = table[1, 2]
+  inacc_pred_YES = table[2, 1]
+  tot_acc = acc_pred_NO + acc_pred_YES
+  tot_inacc = inacc_pred_NO + inacc_pred_YES
+  tot = table[1, 1] + table[1, 2] + table[2, 1] + table[2, 2]
+  avg_acc_pred = tot_acc / tot
+  avg_inacc_pred = tot_inacc / tot
+  result = c(avg_acc_pred, avg_inacc_pred)
+  return(result)
+
+  return(result)
+}
+```
+############################################################################################################
+
+
+############################################################################################################
+Models Training and Test Comparisons (Stepwise)
+############################################################################################################
+```{r}
+library(ggplot2)
+train_samples=list(dat_samp_train_1, 
+                   dat_samp_train_2, 
+                   dat_samp_train_3, 
+                   dat_samp_train_4, 
+                   dat_samp_train_5,
+                   dat_samp_train_6,
+                   dat_samp_train_7,
+                   dat_samp_train_8,
+                   dat_samp_train_9,
+                   dat_samp_train_10)
+
+test_samples=list(dat_samp_test_1,
+                  dat_samp_test_2,
+                  dat_samp_test_3,
+                  dat_samp_test_4,
+                  dat_samp_test_5,
+                  dat_samp_test_6,
+                  dat_samp_test_7,
+                  dat_samp_test_8,
+                  dat_samp_test_9,
+                  dat_samp_test_10)
+
+modeling_24hrs=list()
+modeling_12hrs=list()
+modeling_6hrs=list()
+modeling_3hrs=list()
+modeling_1hrs=list()
+
+
+for(i in 1:10)
+{
+  modeling_24hrs[[i]] <- glm(formula = as.factor(Question) ~ temp_24h_Den + pressure_24h_Den + 
+                               weather_main_24h_Den_Dummy + humidity_24h_Den, family = binomial(), data=train_samples[[i]])
+}
+
+for(i in 1:10)
+{
+  modeling_12hrs[[i]] <- glm(formula = as.factor(Question) ~ pressure_12h_Den + weather_main_12h_Den_Dummy + 
+                               temp_12h_Den + humidity_12h_Den + weather_main_24h_Den_Dummy + 
+                               clouds_all_12h_Den, family = binomial(), data=train_samples[[i]])
+}
+
+
+for(i in 1:10)
+{
+  modeling_6hrs[[i]] <- glm(formula = as.factor(Question) ~ weather_main_6h_Den_Dummy + 
+                              pressure_6h_Den + temp_6h_Den + humidity_6h_Den + clouds_all_6h_Den + 
+                              weather_main_24h_Den_Dummy + weather_main_12h_Den_Dummy + 
+                              wind_speed_6h_Den, family = binomial(), data=train_samples[[i]])
+}
+
+for(i in 1:10)
+{
+  modeling_3hrs[[i]] <- glm(formula = as.factor(Question) ~ weather_main_3h_Den_Dummy + 
+                              pressure_3h_Den + humidity_3h_Den + temp_3h_Den + clouds_all_3h_Den + 
+                              weather_main_6h_Den_Dummy + weather_main_12h_Den_Dummy + 
+                              wind_speed_3h_Den + weather_main_24h_Den_Dummy, family = binomial(), 
+                            data =train_samples[[i]]) 
+}
+
+
+for(i in 1:10)
+{
+  modeling_1hrs[[i]] <- glm(formula = as.factor(Question) ~ weather_main_1h_Den_Dummy + 
+                              pressure_1h_Den + weather_main_6h_Den_Dummy + temp_1h_Den + 
+                              humidity_1h_Den + clouds_all_1h_Den + weather_main_12h_Den_Dummy + 
+                              wind_speed_1h_Den + weather_main_3h_Den_Dummy + weather_main_24h_Den_Dummy, 
+                            family = binomial(), data=train_samples[[i]])
+}
+
+train_values_24=matrix(NA, nrow=10, ncol=2)
+test_values_24=matrix(NA, nrow=10, ncol=2)
+
+train_values_12=matrix(NA, nrow=10, ncol=2)
+test_values_12=matrix(NA, nrow=10, ncol=2)
+
+train_values_6=matrix(NA, nrow=10, ncol=2)
+test_values_6=matrix(NA, nrow=10, ncol=2)
+
+train_values_3=matrix(NA, nrow=10, ncol=2)
+test_values_3=matrix(NA, nrow=10, ncol=2)
+
+train_values_1=matrix(NA, nrow=10, ncol=2)
+test_values_1=matrix(NA, nrow=10, ncol=2)
+
+
+for(i in 1:10)
+{
+  train_values_24[i,]=Model_train(train_samples[[i]],modeling_24hrs[[i]])
+  test_values_24[i,]=Model_test(test_samples[[i]],modeling_24hrs[[i]])
+  
+  train_values_12[i,]=Model_train(train_samples[[i]],modeling_12hrs[[i]])
+  test_values_12[i,]=Model_test(test_samples[[i]],modeling_12hrs[[i]])
+  
+  train_values_6[i,]=Model_train(train_samples[[i]],modeling_6hrs[[i]])
+  test_values_6[i,]=Model_test(test_samples[[i]],modeling_6hrs[[i]])
+  
+  train_values_3[i,]=Model_train(train_samples[[i]],modeling_3hrs[[i]])
+  test_values_3[i,]=Model_test(test_samples[[i]],modeling_3hrs[[i]])
+  
+  train_values_1[i,]=Model_train(train_samples[[i]],modeling_1hrs[[i]])
+  test_values_1[i,]=Model_test(test_samples[[i]],modeling_1hrs[[i]])
+}
+
+index=seq(1:10)
+twofours=rep(24, times=10)
+onetwos=rep(12, times=10)
+sixes=rep(6, times=10)
+threes=rep(3, times=10)
+ones=rep(1, times=10)
+
+
+
+train_values_24df=data.frame(cbind(train_values_24, twofours, index))
+names(train_values_24df)=c("Accurate_Predict_Train", "Inaccurate_Predict_Train", "Model_Setback", "index")
+test_values_24df=data.frame(cbind(test_values_24, twofours))
+names(test_values_24df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback")
+
+
+train_values_12df=data.frame(cbind(train_values_12), onetwos, index)
+names(train_values_12df)=c("Accurate_Predict_Train", "Inaccurate_Predict_Train", "Model_Setback", "index")
+test_values_12df=data.frame(cbind(test_values_12), onetwos, index)
+names(test_values_12df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+
+
+train_values_6df=data.frame(cbind(train_values_6), sixes, index)
+names(train_values_6df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+test_values_6df=data.frame(cbind(test_values_6), sixes, index)
+names(test_values_6df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+
+
+train_values_3df=data.frame(cbind(train_values_3), threes, index)
+names(train_values_3df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+test_values_3df=data.frame(cbind(test_values_3), threes, index)
+names(test_values_3df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+
+
+train_values_1df=data.frame(cbind(train_values_1), ones, index)
+names(train_values_1df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+test_values_1df=data.frame(cbind(test_values_1), ones, index)
+names(test_values_1df)=c("Accurate Predict Train", "Inaccurate Predict Train", "Model Setback", "index")
+
+
+
+write.csv(train_values_24df, file = 'train_values_24df.csv')
+write.csv(train_values_12df, file = 'train_values_12df.csv')
+write.csv(train_values_6df, file = 'train_values_6df.csv')
+write.csv(train_values_3df, file = 'train_values_3df.csv')
+write.csv(train_values_1df, file = 'train_values_1df.csv')
+
+write.csv(test_values_24df, file = 'test_values_24df.csv')
+write.csv(test_values_12df, file = 'test_values_12df.csv')
+write.csv(test_values_6df, file = 'test_values_6df.csv')
+write.csv(test_values_3df, file = 'test_values_3df.csv')
+write.csv(test_values_1df, file = 'test_values_1df.csv')
+
+stepwise_avgs=read.csv(file = 'Stepwise_Averages_Correct.csv')
+stepwise_avgs$Setback=as.factor(stepwise_avgs$Setback)
+stepwise_avgs$Test=as.factor(stepwise_avgs$Test)
+p <- ggplot(data = stepwise_avgs, aes(x = index, y=Prediction, group=Setback))
+p + geom_point(aes(color=Setback, shape=Test, size=1.5)) + geom_line()
+
+
+Avg_Avg=read.csv('Avg_Avg.csv')
+
+q <- ggplot(data = Avg_Avg, aes(x = Hours, y=Averages, group=Group))
+q + geom_point() + geom_line()
+
+m <- ggplot(data = Avg_Avg, aes(x = Hours, y=Percent.Change, group=Group, color=Group))
+m + geom_point() + geom_line()
+
+```
+############################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
